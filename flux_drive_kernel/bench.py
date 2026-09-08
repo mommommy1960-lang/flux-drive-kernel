@@ -92,6 +92,7 @@ class FluxDriveBench:
         measured_force_N: float | None = None,
         measured_current_A: float | None = None,
         measured_temperature_C: float | None = None,
+        measured_voltage_V: float | None = None,
     ) -> BenchState:
         """Advance one timestep using simulated or measured HIL channels.
 
@@ -110,6 +111,9 @@ class FluxDriveBench:
             if measured_current_A is not None
             else abs(command) * self.config.max_current_A
         )
+        voltage = self.config.supply_voltage_V if measured_voltage_V is None else measured_voltage_V
+        if voltage < 0:
+            raise ValueError("measured_voltage_V cannot be negative")
         temperature = (
             measured_temperature_C
             if measured_temperature_C is not None
@@ -138,7 +142,7 @@ class FluxDriveBench:
         self.state.current_A = current
         self.state.force_N = force
         self.state.impulse_N_s += force * dt_s
-        self.state.electrical_energy_J += self.config.supply_voltage_V * current * dt_s
+        self.state.electrical_energy_J += voltage * current * dt_s
         return self.state
 
     def _temperature_step(self, current_A: float, dt_s: float) -> float:
@@ -150,4 +154,3 @@ class FluxDriveBench:
         return self.state.temperature_C + alpha * (
             equilibrium - self.state.temperature_C
         )
-
