@@ -84,3 +84,6 @@ implementation/speculation must remain separately labeled.
 See [`docs/MEASUREMENT_GRADE_BUILD_PACKAGE.md`](docs/MEASUREMENT_GRADE_BUILD_PACKAGE.md)
 for the controlled bench architecture, uncertainty budget, run sequence, and
 acceptance criteria.
+
+The concrete first-build materials and assembly sequence are in
+[`docs/LOW_ENERGY_BENCH_MATERIALS_LIST.md`](docs/LOW_ENERGY_BENCH_MATERIALS_LIST.md).
