@@ -94,3 +94,18 @@ and explained in [`docs/HISTORICAL_EXPERIMENT_REGISTER.md`](docs/HISTORICAL_EXPE
 
 For a concise, evidence-bounded funding case, see
 [`docs/FUNDER_EVIDENCE_BRIEF.md`](docs/FUNDER_EVIDENCE_BRIEF.md).
+
+## Aurora submission checks
+
+Run the full non-hardware reproducibility package from the repository root:
+
+```bash
+python tools/run_submission_demo.py
+```
+
+It validates the local Aurora schemas and runs the 25-test software gate. It
+prints `physical_propulsion_proven=false` by design. See
+[`docs/PRE_SUBMISSION_TECHNICAL_AUDIT.md`](docs/PRE_SUBMISSION_TECHNICAL_AUDIT.md),
+[`docs/SUBMISSION_REVIEW_PACKET.md`](docs/SUBMISSION_REVIEW_PACKET.md), and
+[`docs/PUBLIC_CONFIDENTIAL_BOUNDARY.md`](docs/PUBLIC_CONFIDENTIAL_BOUNDARY.md)
+before sending the project for independent review.
