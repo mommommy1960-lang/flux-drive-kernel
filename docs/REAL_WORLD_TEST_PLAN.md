@@ -12,7 +12,8 @@ warp travel or reactionless propulsion.
    limits, telemetry, energy accounting, and latching trips.
 2. **Hardware-in-the-loop:** feed timestamped voltage, current, temperature,
    and independently calibrated force measurements into the kernel without
-   enabling external actuation.
+   enabling external actuation. Run `python -m flux_drive_kernel --hil-csv
+   data/run001.csv` and retain the JSON report with the raw file.
 3. **Instrumented bench:** use a qualified lab, independent emergency stop,
    shielded low-energy actuator hardware, calibrated load cell, isolated power
    measurement, and thermal monitoring.
@@ -30,6 +31,8 @@ warp travel or reactionless propulsion.
 - repeated runs agree within a predeclared tolerance;
 - all known environmental coupling checks are recorded;
 - no propulsion claim is made unless momentum and energy accounting closes.
+- the HIL report is `PASS`, with zero validation errors and no safety trip;
+- a separate reaction/momentum channel is present before any propulsion claim.
 
 ## Stop conditions
 
@@ -38,4 +41,3 @@ unexpected force with zero command, sensor disagreement, insulation fault,
 loss of telemetry, or unexplained energy imbalance. Do not increase voltage,
 current, vacuum, laser power, magnetic field, or stored energy to chase a
 surprising result.
-
