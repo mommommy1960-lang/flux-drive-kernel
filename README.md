@@ -1,5 +1,7 @@
 # Flux Drive Kernel
 
+The repository test gate runs on every push and pull request.
+
 This repository contains the first executable, testable layer of the Commons
 Flux Drive project: a safe actuator-bench and hardware-in-the-loop reference
 kernel.
