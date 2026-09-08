@@ -24,6 +24,8 @@ exist. The kernel therefore enforces a strict boundary between:
 - force, impulse, electrical energy, and telemetry accounting;
 - hardware-in-the-loop measured-channel API and JSON output;
 - CSV replay with automatic validation and pass/fail reporting;
+- strict reaction-force momentum-closure mode;
+- GitHub Actions continuous integration on every push and pull request;
 - standard-library-only tests.
 
 Run a short simulation from the repository root:
@@ -38,11 +40,19 @@ Audit measured channels from a CSV (no external actuation is enabled):
 python -m flux_drive_kernel --hil-csv data/run001.csv
 ```
 
+Require the reaction channel for a strict closure test:
+
+```bash
+python -m flux_drive_kernel --hil-csv data/run001.csv --require-momentum
+```
+
 The CSV must contain `timestamp_s`, `command`, `measured_voltage_V`,
 `measured_current_A`, `measured_temperature_C`, and `measured_force_N`.
 The report includes measured impulse, electrical energy, peak channels, safety
 trips, and validation errors. `momentum_closure_status` remains
 `not_assessed` until an independent reaction/momentum channel is recorded.
+Strict mode fails closed when `reaction_force_N` is absent or when the signed
+force impulses do not close within the declared tolerance.
 
 Run the tests:
 
