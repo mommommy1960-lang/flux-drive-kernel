@@ -27,6 +27,7 @@ exist. The kernel therefore enforces a strict boundary between:
 - hardware-in-the-loop measured-channel API and JSON output;
 - CSV replay with automatic validation and pass/fail reporting;
 - strict reaction-force momentum-closure mode;
+- calibration and uncertainty propagation for measurement-grade data;
 - GitHub Actions continuous integration on every push and pull request;
 - standard-library-only tests.
 
@@ -79,3 +80,7 @@ The repository's `GOVERNANCE.md` is part of the engineering specification:
 external actuation must remain independently interruptible, consequential
 actions must be attributable and auditable, and simulation/prototype/verified
 implementation/speculation must remain separately labeled.
+
+See [`docs/MEASUREMENT_GRADE_BUILD_PACKAGE.md`](docs/MEASUREMENT_GRADE_BUILD_PACKAGE.md)
+for the controlled bench architecture, uncertainty budget, run sequence, and
+acceptance criteria.
