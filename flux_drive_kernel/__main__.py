@@ -6,6 +6,7 @@ import argparse
 import json
 
 from .bench import FluxDriveBench
+from .hil import audit_csv, report_json
 
 
 def main() -> int:
@@ -13,7 +14,11 @@ def main() -> int:
     parser.add_argument("--seconds", type=float, default=1.0)
     parser.add_argument("--dt", type=float, default=0.01)
     parser.add_argument("--command", type=float, default=0.25)
+    parser.add_argument("--hil-csv", help="audit a measured-channel CSV instead of running simulation")
     args = parser.parse_args()
+    if args.hil_csv:
+        print(report_json(audit_csv(args.hil_csv)))
+        return 0
     if args.seconds <= 0 or args.dt <= 0:
         parser.error("--seconds and --dt must be positive")
 
@@ -29,4 +34,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
