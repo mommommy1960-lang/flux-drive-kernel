@@ -34,6 +34,22 @@ class HILTests(unittest.TestCase):
         self.assertEqual(report.status, "FAIL")
         self.assertTrue(report.validation_errors)
 
+    def test_complete_channels_close_momentum(self):
+        rows = [
+            {"timestamp_s": "0", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0", "measured_temperature_C": "22", "measured_force_N": "0", "reaction_force_N": "0"},
+            {"timestamp_s": "0.1", "command": "0.2", "measured_voltage_V": "24", "measured_current_A": "0.5", "measured_temperature_C": "22.1", "measured_force_N": "0.3", "reaction_force_N": "-0.3"},
+        ]
+        report = audit_rows(rows, require_momentum_channels=True)
+        self.assertEqual(report.status, "PASS")
+        self.assertEqual(report.momentum_closure_status, "pass")
+        self.assertAlmostEqual(report.momentum_residual_N_s, 0.0)
+
+    def test_strict_mode_rejects_missing_reaction_channel(self):
+        rows = [{"timestamp_s": "0", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0", "measured_temperature_C": "22", "measured_force_N": "0"}]
+        report = audit_rows(rows, require_momentum_channels=True)
+        self.assertEqual(report.status, "FAIL")
+        self.assertIn("reaction_force_N", report.missing_columns)
+
 
 if __name__ == "__main__":
     unittest.main()
