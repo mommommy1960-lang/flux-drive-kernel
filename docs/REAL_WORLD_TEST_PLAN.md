@@ -13,7 +13,8 @@ warp travel or reactionless propulsion.
 2. **Hardware-in-the-loop:** feed timestamped voltage, current, temperature,
    and independently calibrated force measurements into the kernel without
    enabling external actuation. Run `python -m flux_drive_kernel --hil-csv
-   data/run001.csv` and retain the JSON report with the raw file.
+   data/run001.csv --require-momentum` and retain the JSON report with the raw
+   file. Strict mode requires a signed `reaction_force_N` channel.
 3. **Instrumented bench:** use a qualified lab, independent emergency stop,
    shielded low-energy actuator hardware, calibrated load cell, isolated power
    measurement, and thermal monitoring.
