@@ -63,7 +63,12 @@ class TSphere:
             self.mode = Mode.ROAM
             return self._record("roam")
         if name == "morph":
-            target = float(kwargs["radius_mm"])
+            try:
+                target = float(kwargs["radius_mm"])
+            except (KeyError, TypeError, ValueError):
+                self.emergency_stop = True
+                self.mode = Mode.SAFE
+                return self._record("reject: malformed_radius")
             if not self.min_radius_mm <= target <= self.max_radius_mm:
                 self.emergency_stop = True
                 self.mode = Mode.SAFE
@@ -75,7 +80,12 @@ class TSphere:
             self.mode = Mode.INSPECT
             return self._record("sensor_only_inspection")
         if name == "handoff":
-            side = str(kwargs["barrier_side"])
+            try:
+                side = str(kwargs["barrier_side"])
+            except (KeyError, TypeError, ValueError):
+                self.emergency_stop = True
+                self.mode = Mode.SAFE
+                return self._record("reject: malformed_barrier_side")
             if side not in {"A", "B"}:
                 self.emergency_stop = True
                 self.mode = Mode.SAFE
