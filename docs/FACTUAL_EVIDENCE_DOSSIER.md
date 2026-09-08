@@ -80,9 +80,11 @@ operator_id
 calibration_id
 ```
 
-The current kernel audits the first six channels. The reaction-force and
-environmental channels are the next required extension before a propulsion
-verdict can be issued.
+The current kernel audits the first six channels and supports strict ingestion
+of the reaction-force and environmental channels. Use
+`--require-momentum` and `--require-environment` to fail closed when those
+channels are absent. A closed recorded momentum balance is still not, by
+itself, proof of reactionless propulsion; it is a prerequisite gate.
 
 ## Automatic decision gates
 
