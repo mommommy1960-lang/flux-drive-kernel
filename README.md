@@ -22,7 +22,7 @@ exist. The kernel therefore enforces a strict boundary between:
 - command limiting and emergency-stop behavior;
 - over-current and over-temperature trips;
 - force, impulse, electrical energy, and telemetry accounting;
-- CSV hardware-in-the-loop input and JSON output;
+- hardware-in-the-loop measured-channel API and JSON output;
 - standard-library-only tests.
 
 Run a short simulation from the repository root:
