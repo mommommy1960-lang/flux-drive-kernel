@@ -14,6 +14,7 @@ class HILTests(unittest.TestCase):
         report = audit_rows(rows)
         self.assertEqual(report.status, "PASS")
         self.assertAlmostEqual(report.measured_impulse_N_s, 0.03)
+        self.assertAlmostEqual(report.measured_electrical_energy_J, 1.2)
         self.assertEqual(report.momentum_closure_status, "not_assessed")
 
     def test_missing_columns_fail_closed(self):
