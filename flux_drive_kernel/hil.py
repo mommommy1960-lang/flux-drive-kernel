@@ -74,7 +74,8 @@ def audit_rows(rows: Iterable[Mapping[str, str]], config: BenchConfig | None = N
             if voltage < 0:
                 errors.append(f"line {line}: measured_voltage_V cannot be negative")
             bench.step(command, dt_s=max(dt, 1e-9), measured_force_N=force,
-                       measured_current_A=current, measured_temperature_C=temperature)
+                       measured_current_A=current, measured_temperature_C=temperature,
+                       measured_voltage_V=voltage)
             peak_force = max(peak_force, abs(force))
             peak_current = max(peak_current, abs(current))
             peak_temperature = max(peak_temperature, temperature)
