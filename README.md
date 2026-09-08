@@ -87,3 +87,10 @@ acceptance criteria.
 
 The concrete first-build materials and assembly sequence are in
 [`docs/LOW_ENERGY_BENCH_MATERIALS_LIST.md`](docs/LOW_ENERGY_BENCH_MATERIALS_LIST.md).
+
+Historical published observations are registered in
+[`data/literature_reference_experiments.csv`](data/literature_reference_experiments.csv)
+and explained in [`docs/HISTORICAL_EXPERIMENT_REGISTER.md`](docs/HISTORICAL_EXPERIMENT_REGISTER.md).
+
+For a concise, evidence-bounded funding case, see
+[`docs/FUNDER_EVIDENCE_BRIEF.md`](docs/FUNDER_EVIDENCE_BRIEF.md).
