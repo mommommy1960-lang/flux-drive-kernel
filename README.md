@@ -23,6 +23,7 @@ exist. The kernel therefore enforces a strict boundary between:
 - over-current and over-temperature trips;
 - force, impulse, electrical energy, and telemetry accounting;
 - hardware-in-the-loop measured-channel API and JSON output;
+- CSV replay with automatic validation and pass/fail reporting;
 - standard-library-only tests.
 
 Run a short simulation from the repository root:
@@ -30,6 +31,18 @@ Run a short simulation from the repository root:
 ```bash
 python -m flux_drive_kernel --seconds 2 --command 0.25
 ```
+
+Audit measured channels from a CSV (no external actuation is enabled):
+
+```bash
+python -m flux_drive_kernel --hil-csv data/run001.csv
+```
+
+The CSV must contain `timestamp_s`, `command`, `measured_voltage_V`,
+`measured_current_A`, `measured_temperature_C`, and `measured_force_N`.
+The report includes measured impulse, electrical energy, peak channels, safety
+trips, and validation errors. `momentum_closure_status` remains
+`not_assessed` until an independent reaction/momentum channel is recorded.
 
 Run the tests:
 
@@ -54,4 +67,3 @@ The repository's `GOVERNANCE.md` is part of the engineering specification:
 external actuation must remain independently interruptible, consequential
 actions must be attributable and auditable, and simulation/prototype/verified
 implementation/speculation must remain separately labeled.
-
