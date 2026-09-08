@@ -1,0 +1,6 @@
+experiment_id,input_power_W,reported_force_N,source_url,result_class,calibration_status
+NASA_Eagleworks_2017_40W,40,0.000048,https://ntrs.nasa.gov/api/citations/20170000277/downloads/20170000277.pdf,positive_signal,published_summary_not_raw_calibration_dataset
+NASA_Eagleworks_2017_60W,60,0.000072,https://ntrs.nasa.gov/api/citations/20170000277/downloads/20170000277.pdf,positive_signal,published_summary_not_raw_calibration_dataset
+NASA_Eagleworks_2017_80W,80,0.000096,https://ntrs.nasa.gov/api/citations/20170000277/downloads/20170000277.pdf,positive_signal,published_summary_not_raw_calibration_dataset
+Tajmar_SpaceDrive_2019_2W,2,,https://link.springer.com/article/10.1007/s12567-021-00385-1,artifact_control_and_orientation_dependence,published_summary_no_single_force_value
+Tajmar_Neunzig_2022,11,,https://link.springer.com/article/10.1007/s12567-021-00385-1,no_anomalous_thrust_above_photon_limit,published_summary_no_single_force_value
