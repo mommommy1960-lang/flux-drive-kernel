@@ -32,6 +32,26 @@ class BenchTests(unittest.TestCase):
         state = bench.step(0.0, dt_s=0.1, measured_current_A=0.2)
         self.assertEqual(state.force_N, 0.0)
 
+    def test_zero_dt_records_initial_sample_without_integrating(self):
+        bench = FluxDriveBench()
+        state = bench.step(
+            0.0,
+            dt_s=0.0,
+            measured_force_N=20.0,
+            measured_current_A=0.2,
+            measured_voltage_V=24.0,
+        )
+        self.assertEqual(state.force_N, 20.0)
+        self.assertEqual(state.time_s, 0.0)
+        self.assertEqual(state.impulse_N_s, 0.0)
+        self.assertEqual(state.electrical_energy_J, 0.0)
+
+    def test_measured_force_is_not_clipped_to_simulation_limit(self):
+        bench = FluxDriveBench(BenchConfig(max_force_N=1.0))
+        state = bench.step(0.0, dt_s=0.1, measured_force_N=20.0, measured_current_A=0.2)
+        self.assertEqual(state.force_N, 20.0)
+        self.assertEqual(state.impulse_N_s, 2.0)
+
     def test_over_current_fails_closed(self):
         bench = FluxDriveBench(BenchConfig(max_current_A=1.0))
         state = bench.step(0.2, dt_s=0.1, measured_current_A=1.01)
@@ -49,6 +69,14 @@ class BenchTests(unittest.TestCase):
         state = bench.step(0.0, dt_s=0.1, measured_force_N=2.0, measured_current_A=0.2)
         self.assertAlmostEqual(state.force_N, 2.0)
         self.assertAlmostEqual(state.impulse_N_s, 0.2)
+
+    def test_nonfinite_inputs_are_rejected(self):
+        with self.assertRaises(ValueError):
+            BenchConfig(mass_kg=float("nan"))
+        with self.assertRaises(ValueError):
+            FluxDriveBench().step(float("nan"), dt_s=0.1)
+        with self.assertRaises(ValueError):
+            FluxDriveBench().step(0.0, dt_s=float("inf"))
 
     def test_emergency_stop_is_latching(self):
         bench = FluxDriveBench()
