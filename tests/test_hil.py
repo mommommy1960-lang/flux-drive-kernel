@@ -13,9 +13,30 @@ class HILTests(unittest.TestCase):
         ]
         report = audit_rows(rows)
         self.assertEqual(report.status, "PASS")
-        self.assertAlmostEqual(report.measured_impulse_N_s, 0.03)
-        self.assertAlmostEqual(report.measured_electrical_energy_J, 1.2)
+        self.assertAlmostEqual(report.measured_impulse_N_s, 0.015)
+        self.assertAlmostEqual(report.measured_electrical_energy_J, 0.72)
+        self.assertEqual(report.integration_method, "trapezoidal")
         self.assertEqual(report.momentum_closure_status, "not_assessed")
+
+    def test_first_sample_does_not_invent_time_or_impulse(self):
+        rows = [
+            {"timestamp_s": "10", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0.1", "measured_temperature_C": "22", "measured_force_N": "5.0"},
+        ]
+        report = audit_rows(rows)
+        self.assertEqual(report.status, "PASS")
+        self.assertEqual(report.duration_s, 0.0)
+        self.assertEqual(report.measured_impulse_N_s, 0.0)
+        self.assertEqual(report.measured_electrical_energy_J, 0.0)
+
+    def test_measured_force_is_not_clipped_to_simulation_limit(self):
+        rows = [
+            {"timestamp_s": "0", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0.1", "measured_temperature_C": "22", "measured_force_N": "20"},
+            {"timestamp_s": "0.1", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0.1", "measured_temperature_C": "22", "measured_force_N": "20"},
+        ]
+        report = audit_rows(rows)
+        self.assertEqual(report.status, "PASS")
+        self.assertEqual(report.peak_abs_force_N, 20.0)
+        self.assertAlmostEqual(report.measured_impulse_N_s, 2.0)
 
     def test_missing_columns_fail_closed(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -44,11 +65,25 @@ class HILTests(unittest.TestCase):
         self.assertEqual(report.momentum_closure_status, "pass")
         self.assertAlmostEqual(report.momentum_residual_N_s, 0.0)
 
+    def test_strict_mode_fails_when_momentum_does_not_close(self):
+        rows = [
+            {"timestamp_s": "0", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0", "measured_temperature_C": "22", "measured_force_N": "0", "reaction_force_N": "0"},
+            {"timestamp_s": "1", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0", "measured_temperature_C": "22", "measured_force_N": "1", "reaction_force_N": "0"},
+        ]
+        report = audit_rows(rows, require_momentum_channels=True, momentum_tolerance_N_s=1e-9)
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(report.momentum_closure_status, "fail")
+        self.assertEqual(report.propulsion_verdict, "momentum_not_closed")
+
     def test_strict_mode_rejects_missing_reaction_channel(self):
         rows = [{"timestamp_s": "0", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0", "measured_temperature_C": "22", "measured_force_N": "0"}]
         report = audit_rows(rows, require_momentum_channels=True)
         self.assertEqual(report.status, "FAIL")
         self.assertIn("reaction_force_N", report.missing_columns)
+
+    def test_invalid_momentum_tolerance_is_rejected(self):
+        with self.assertRaises(ValueError):
+            audit_rows([], momentum_tolerance_N_s=-1.0)
 
 
 if __name__ == "__main__":
