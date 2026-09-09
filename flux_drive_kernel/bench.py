@@ -81,6 +81,10 @@ class FluxDriveBench:
     or silently altered. Physical sensor over-range/safety limits belong in
     measurement metadata and independent hardware interlocks, not in this
     software simulation clamp.
+
+    A zero-duration step is allowed so the first HIL sample can be validated and
+    recorded without inventing a time interval, impulse, displacement, or
+    electrical energy. Negative duration is always rejected.
     """
 
     def __init__(self, config: BenchConfig | None = None) -> None:
@@ -119,15 +123,11 @@ class FluxDriveBench:
         converted into a claim of propulsion; callers must perform independent
         momentum accounting.
         """
-        values = {
-            "command": command,
-            "dt_s": dt_s,
-        }
-        for name, value in values.items():
+        for name, value in {"command": command, "dt_s": dt_s}.items():
             if not math.isfinite(value):
                 raise ValueError(f"{name} must be finite")
-        if dt_s <= 0:
-            raise ValueError("dt_s must be positive")
+        if dt_s < 0:
+            raise ValueError("dt_s must be nonnegative")
         if self.stopped:
             return self.state
 
@@ -160,8 +160,7 @@ class FluxDriveBench:
             self.emergency_stop("over_temperature")
             return self.state
 
-        measured_mode = measured_force_N is not None
-        if measured_mode:
+        if measured_force_N is not None:
             if not math.isfinite(measured_force_N):
                 raise ValueError("measured_force_N must be finite")
             force = measured_force_N
