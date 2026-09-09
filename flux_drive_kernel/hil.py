@@ -118,10 +118,16 @@ def audit_rows(
         coverage_factor,
     )
 
+    momentum_required = (
+        require_momentum_channels
+        or require_uncertainty_for_momentum
+        or force_impulse_standard_uncertainty_N_s is not None
+    )
+
     materialized = list(rows)
     present = set(materialized[0]) if materialized else set()
     missing = [column for column in REQUIRED_COLUMNS if column not in present]
-    if require_momentum_channels:
+    if momentum_required:
         missing.extend(column for column in MOMENTUM_COLUMNS if column not in present)
     if require_environment_channels:
         missing.extend(column for column in ENVIRONMENT_COLUMNS if column not in present)
@@ -133,6 +139,12 @@ def audit_rows(
             peak_abs_force_N=0.0, peak_current_A=0.0, peak_temperature_C=0.0,
             safety_trip=None, missing_columns=tuple(dict.fromkeys(missing)),
             data_completeness_status="incomplete",
+            propulsion_verdict=(
+                "uncertainty_required"
+                if require_uncertainty_for_momentum
+                and force_impulse_standard_uncertainty_N_s is None
+                else "not_assessed"
+            ),
         )
 
     bench = FluxDriveBench(config)
@@ -166,12 +178,9 @@ def audit_rows(
                 if reaction_impulse is not None
                 else None
             )
-            environment_values = {
-                column: _number(row, column, line)
-                for column in ENVIRONMENT_COLUMNS
-                if column in present
-            }
-            del environment_values  # validation side effect only for now
+            for column in ENVIRONMENT_COLUMNS:
+                if column in present:
+                    _number(row, column, line)
 
             if voltage < 0:
                 raise ValueError(f"line {line}: measured_voltage_V cannot be negative")
@@ -182,9 +191,6 @@ def audit_rows(
             instantaneous_power = voltage * current
             instantaneous_abs_power = abs(instantaneous_power)
 
-            # Validate safety/state channels before committing this row to the
-            # integration history. Zero duration is intentional for the first
-            # sample and is supported by FluxDriveBench.
             bench.step(
                 command,
                 dt_s=dt,
@@ -194,8 +200,6 @@ def audit_rows(
                 measured_voltage_V=voltage,
             )
 
-            # Trapezoidal integration makes the numerical rule explicit and
-            # prevents the first sample from inventing a nonzero time interval.
             if previous_timestamp is not None:
                 measured_impulse += 0.5 * (previous_force + force) * dt
                 measured_energy += 0.5 * (previous_power + instantaneous_power) * dt
@@ -277,7 +281,7 @@ def audit_rows(
         complete = "basic_channels_only"
 
     status = "PASS" if count and not errors and bench.state.safety_trip is None else "FAIL"
-    if require_momentum_channels and closure != "pass":
+    if momentum_required and closure != "pass":
         status = "FAIL"
     if require_environment_channels and not environment_complete:
         status = "FAIL"
