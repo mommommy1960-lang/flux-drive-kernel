@@ -15,6 +15,7 @@ class HILTests(unittest.TestCase):
         self.assertEqual(report.status, "PASS")
         self.assertAlmostEqual(report.measured_impulse_N_s, 0.015)
         self.assertAlmostEqual(report.measured_electrical_energy_J, 0.72)
+        self.assertAlmostEqual(report.measured_absolute_electrical_energy_J, 0.72)
         self.assertEqual(report.integration_method, "trapezoidal")
         self.assertEqual(report.momentum_closure_status, "not_assessed")
 
@@ -27,6 +28,15 @@ class HILTests(unittest.TestCase):
         self.assertEqual(report.duration_s, 0.0)
         self.assertEqual(report.measured_impulse_N_s, 0.0)
         self.assertEqual(report.measured_electrical_energy_J, 0.0)
+
+    def test_signed_and_absolute_electrical_energy_are_distinguished(self):
+        rows = [
+            {"timestamp_s": "0", "command": "0", "measured_voltage_V": "24", "measured_current_A": "-0.1", "measured_temperature_C": "22", "measured_force_N": "0"},
+            {"timestamp_s": "1", "command": "0", "measured_voltage_V": "24", "measured_current_A": "-0.1", "measured_temperature_C": "22", "measured_force_N": "0"},
+        ]
+        report = audit_rows(rows)
+        self.assertAlmostEqual(report.measured_electrical_energy_J, -2.4)
+        self.assertAlmostEqual(report.measured_absolute_electrical_energy_J, 2.4)
 
     def test_measured_force_is_not_clipped_to_simulation_limit(self):
         rows = [
@@ -64,6 +74,39 @@ class HILTests(unittest.TestCase):
         self.assertEqual(report.status, "PASS")
         self.assertEqual(report.momentum_closure_status, "pass")
         self.assertAlmostEqual(report.momentum_residual_N_s, 0.0)
+        self.assertEqual(report.momentum_closure_method, "fixed_tolerance_software_check")
+
+    def test_uncertainty_aware_momentum_closure(self):
+        rows = [
+            {"timestamp_s": "0", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0", "measured_temperature_C": "22", "measured_force_N": "0", "reaction_force_N": "0"},
+            {"timestamp_s": "1", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0", "measured_temperature_C": "22", "measured_force_N": "1", "reaction_force_N": "-0.8"},
+        ]
+        report = audit_rows(
+            rows,
+            require_momentum_channels=True,
+            force_impulse_standard_uncertainty_N_s=0.1,
+            reaction_impulse_standard_uncertainty_N_s=0.1,
+            coverage_factor=2.0,
+            require_uncertainty_for_momentum=True,
+        )
+        self.assertEqual(report.status, "PASS")
+        self.assertEqual(report.momentum_closure_status, "pass")
+        self.assertEqual(report.momentum_closure_method, "expanded_uncertainty")
+        self.assertIsNotNone(report.momentum_expanded_uncertainty_N_s)
+        self.assertEqual(report.momentum_coverage_factor, 2.0)
+
+    def test_measurement_grade_mode_requires_uncertainty(self):
+        rows = [
+            {"timestamp_s": "0", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0", "measured_temperature_C": "22", "measured_force_N": "0", "reaction_force_N": "0"},
+            {"timestamp_s": "1", "command": "0", "measured_voltage_V": "24", "measured_current_A": "0", "measured_temperature_C": "22", "measured_force_N": "0", "reaction_force_N": "0"},
+        ]
+        report = audit_rows(
+            rows,
+            require_momentum_channels=True,
+            require_uncertainty_for_momentum=True,
+        )
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(report.propulsion_verdict, "uncertainty_required")
 
     def test_strict_mode_fails_when_momentum_does_not_close(self):
         rows = [
@@ -84,6 +127,10 @@ class HILTests(unittest.TestCase):
     def test_invalid_momentum_tolerance_is_rejected(self):
         with self.assertRaises(ValueError):
             audit_rows([], momentum_tolerance_N_s=-1.0)
+
+    def test_uncertainty_inputs_must_be_paired(self):
+        with self.assertRaises(ValueError):
+            audit_rows([], force_impulse_standard_uncertainty_N_s=0.1)
 
 
 if __name__ == "__main__":
