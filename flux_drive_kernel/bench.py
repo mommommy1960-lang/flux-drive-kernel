@@ -8,7 +8,14 @@ infer propulsion, reactionless force, or exotic physics from a command signal.
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
+import math
 from typing import Dict, Optional
+
+
+def _finite(name: str, value: float) -> float:
+    if not math.isfinite(float(value)):
+        raise ValueError(f"{name} must be finite")
+    return float(value)
 
 
 @dataclass(frozen=True)
@@ -25,6 +32,20 @@ class BenchConfig:
     thermal_time_constant_s: float = 12.0
 
     def __post_init__(self) -> None:
+        values = {
+            "mass_kg": self.mass_kg,
+            "max_command": self.max_command,
+            "max_force_N": self.max_force_N,
+            "supply_voltage_V": self.supply_voltage_V,
+            "max_current_A": self.max_current_A,
+            "force_per_amp_N_A": self.force_per_amp_N_A,
+            "ambient_temperature_C": self.ambient_temperature_C,
+            "max_temperature_C": self.max_temperature_C,
+            "thermal_resistance_C_W": self.thermal_resistance_C_W,
+            "thermal_time_constant_s": self.thermal_time_constant_s,
+        }
+        for name, value in values.items():
+            _finite(name, value)
         positive = {
             "mass_kg": self.mass_kg,
             "max_force_N": self.max_force_N,
@@ -69,10 +90,10 @@ class FluxDriveBench:
         |I| = |command| * I_max
         F = sign(command) * |I| * K_F
 
-    where ``K_F`` is ``force_per_amp_N_A``.  Thermal and electrical-energy
+    where ``K_F`` is ``force_per_amp_N_A``. Thermal and electrical-energy
     calculations use current magnitude; force direction comes from command
-    sign.  Measured HIL force remains an instrument channel and is never
-    converted into a propulsion claim.
+    sign. Measured HIL force is preserved as an instrument channel and is never
+    silently clipped to the simulated actuator limit.
     """
 
     def __init__(self, config: BenchConfig | None = None) -> None:
@@ -107,14 +128,25 @@ class FluxDriveBench:
     ) -> BenchState:
         """Advance one timestep using simulated or measured HIL channels.
 
-        ``measured_force_N`` is accepted as an instrument channel. It is never
-        converted into a claim of propulsion; callers must perform independent
-        momentum accounting.
+        ``dt_s=0`` is permitted for an initial sampled state. It updates the
+        instantaneous measured/model channels without inventing impulse or
+        energy before the first real time interval.
         """
-        if dt_s <= 0:
-            raise ValueError("dt_s must be positive")
+        command = _finite("command", command)
+        dt_s = _finite("dt_s", dt_s)
+        if dt_s < 0:
+            raise ValueError("dt_s must be nonnegative")
         if self.stopped:
             return self.state
+
+        if measured_force_N is not None:
+            measured_force_N = _finite("measured_force_N", measured_force_N)
+        if measured_current_A is not None:
+            measured_current_A = _finite("measured_current_A", measured_current_A)
+        if measured_temperature_C is not None:
+            measured_temperature_C = _finite("measured_temperature_C", measured_temperature_C)
+        if measured_voltage_V is not None:
+            measured_voltage_V = _finite("measured_voltage_V", measured_voltage_V)
 
         command = max(-self.config.max_command, min(self.config.max_command, command))
         current_magnitude = (
@@ -139,14 +171,16 @@ class FluxDriveBench:
             return self.state
 
         if measured_force_N is not None:
+            # Instrument data are evidence, not a simulated control output.
+            # Preserve the measured value rather than clipping it to max_force_N.
             force = measured_force_N
         elif command == 0.0:
             force = 0.0
         else:
             direction = 1.0 if command > 0.0 else -1.0
             force = direction * current_magnitude * self.config.force_per_amp_N_A
+            force = max(-self.config.max_force_N, min(self.config.max_force_N, force))
 
-        force = max(-self.config.max_force_N, min(self.config.max_force_N, force))
         acceleration = force / self.config.mass_kg
         self.state.velocity_m_s += acceleration * dt_s
         self.state.position_m += self.state.velocity_m_s * dt_s
