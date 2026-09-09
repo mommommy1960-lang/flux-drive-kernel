@@ -18,6 +18,20 @@ class BenchTests(unittest.TestCase):
         state = bench.step(2.0, dt_s=0.1)
         self.assertAlmostEqual(state.command, 0.5)
 
+    def test_simulated_force_is_linear_in_command(self):
+        config = BenchConfig(max_current_A=4.0, force_per_amp_N_A=2.0)
+        positive = FluxDriveBench(config).step(0.25, dt_s=0.1)
+        negative = FluxDriveBench(config).step(-0.25, dt_s=0.1)
+        self.assertAlmostEqual(positive.current_A, 1.0)
+        self.assertAlmostEqual(positive.force_N, 2.0)
+        self.assertAlmostEqual(negative.current_A, 1.0)
+        self.assertAlmostEqual(negative.force_N, -2.0)
+
+    def test_zero_command_has_zero_simulated_force_even_with_measured_current(self):
+        bench = FluxDriveBench()
+        state = bench.step(0.0, dt_s=0.1, measured_current_A=0.2)
+        self.assertEqual(state.force_N, 0.0)
+
     def test_over_current_fails_closed(self):
         bench = FluxDriveBench(BenchConfig(max_current_A=1.0))
         state = bench.step(0.2, dt_s=0.1, measured_current_A=1.01)
@@ -46,4 +60,3 @@ class BenchTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
