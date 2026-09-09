@@ -6,12 +6,22 @@ from flux_drive_kernel.reference import (
     force_to_power_N_W,
     load_reference_csv,
     photon_pressure_force_N,
+    radiation_momentum_force_N,
 )
 
 
 class ReferenceTests(unittest.TestCase):
     def test_photon_pressure_baseline(self):
         self.assertAlmostEqual(photon_pressure_force_N(1.0), 3.33564095e-9, places=16)
+
+    def test_ideal_reflection_doubles_normal_momentum_transfer(self):
+        absorbed = radiation_momentum_force_N(1.0, momentum_transfer_factor=1.0)
+        reflected = radiation_momentum_force_N(1.0, momentum_transfer_factor=2.0)
+        self.assertAlmostEqual(reflected, 2.0 * absorbed)
+
+    def test_invalid_momentum_transfer_factor_is_rejected(self):
+        with self.assertRaises(ValueError):
+            radiation_momentum_force_N(1.0, momentum_transfer_factor=2.1)
 
     def test_force_to_power_ratio(self):
         self.assertAlmostEqual(force_to_power_N_W(48e-6, 40.0), 1.2e-6)
