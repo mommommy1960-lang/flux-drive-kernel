@@ -7,6 +7,7 @@ infer propulsion, reactionless force, or exotic physics from a command signal.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, asdict
 from typing import Dict, Optional
 
@@ -34,14 +35,16 @@ class BenchConfig:
             "thermal_time_constant_s": self.thermal_time_constant_s,
         }
         for name, value in positive.items():
-            if value <= 0:
-                raise ValueError(f"{name} must be positive")
-        if self.max_command <= 0 or self.max_command > 1:
-            raise ValueError("max_command must be in (0, 1]")
+            if not math.isfinite(value) or value <= 0:
+                raise ValueError(f"{name} must be finite and positive")
+        if not math.isfinite(self.max_command) or self.max_command <= 0 or self.max_command > 1:
+            raise ValueError("max_command must be finite and in (0, 1]")
+        if not math.isfinite(self.ambient_temperature_C) or not math.isfinite(self.max_temperature_C):
+            raise ValueError("temperature limits must be finite")
         if self.max_temperature_C <= self.ambient_temperature_C:
             raise ValueError("max_temperature_C must exceed ambient_temperature_C")
-        if self.thermal_resistance_C_W < 0:
-            raise ValueError("thermal_resistance_C_W cannot be negative")
+        if not math.isfinite(self.thermal_resistance_C_W) or self.thermal_resistance_C_W < 0:
+            raise ValueError("thermal_resistance_C_W must be finite and nonnegative")
 
 
 @dataclass
@@ -62,7 +65,27 @@ class BenchState:
 
 
 class FluxDriveBench:
-    """A fail-closed software plant for bench and HIL development."""
+    """A fail-closed software plant for bench and HIL development.
+
+    The default simulated actuator uses a linear signed force law:
+
+        |I| = |command| * I_max
+        F = sign(command) * |I| * K_F
+
+    where ``K_F`` is ``force_per_amp_N_A``. Thermal and electrical-energy
+    calculations use current magnitude; force direction comes from command
+    sign.
+
+    ``max_force_N`` is a *simulation saturation limit*. A supplied
+    ``measured_force_N`` is an instrument reading and is therefore never clipped
+    or silently altered. Physical sensor over-range/safety limits belong in
+    measurement metadata and independent hardware interlocks, not in this
+    software simulation clamp.
+
+    A zero-duration step is allowed so the first HIL sample can be validated and
+    recorded without inventing a time interval, impulse, displacement, or
+    electrical energy. Negative duration is always rejected.
+    """
 
     def __init__(self, config: BenchConfig | None = None) -> None:
         self.config = config or BenchConfig()
@@ -100,49 +123,64 @@ class FluxDriveBench:
         converted into a claim of propulsion; callers must perform independent
         momentum accounting.
         """
-        if dt_s <= 0:
-            raise ValueError("dt_s must be positive")
+        for name, value in {"command": command, "dt_s": dt_s}.items():
+            if not math.isfinite(value):
+                raise ValueError(f"{name} must be finite")
+        if dt_s < 0:
+            raise ValueError("dt_s must be nonnegative")
         if self.stopped:
             return self.state
 
         command = max(-self.config.max_command, min(self.config.max_command, command))
-        current = (
+
+        if measured_current_A is not None and not math.isfinite(measured_current_A):
+            raise ValueError("measured_current_A must be finite")
+        current_magnitude = (
             abs(measured_current_A)
             if measured_current_A is not None
             else abs(command) * self.config.max_current_A
         )
+
         voltage = self.config.supply_voltage_V if measured_voltage_V is None else measured_voltage_V
-        if voltage < 0:
-            raise ValueError("measured_voltage_V cannot be negative")
+        if not math.isfinite(voltage) or voltage < 0:
+            raise ValueError("measured_voltage_V must be finite and nonnegative")
+
+        if measured_temperature_C is not None and not math.isfinite(measured_temperature_C):
+            raise ValueError("measured_temperature_C must be finite")
         temperature = (
             measured_temperature_C
             if measured_temperature_C is not None
-            else self._temperature_step(current, dt_s)
+            else self._temperature_step(current_magnitude, dt_s)
         )
 
-        if current > self.config.max_current_A:
+        if current_magnitude > self.config.max_current_A:
             self.emergency_stop("over_current")
             return self.state
         if temperature >= self.config.max_temperature_C:
             self.emergency_stop("over_temperature")
             return self.state
 
-        force = (
-            measured_force_N
-            if measured_force_N is not None
-            else command * current * self.config.force_per_amp_N_A
-        )
-        force = max(-self.config.max_force_N, min(self.config.max_force_N, force))
+        if measured_force_N is not None:
+            if not math.isfinite(measured_force_N):
+                raise ValueError("measured_force_N must be finite")
+            force = measured_force_N
+        elif command == 0.0:
+            force = 0.0
+        else:
+            direction = 1.0 if command > 0.0 else -1.0
+            force = direction * current_magnitude * self.config.force_per_amp_N_A
+            force = max(-self.config.max_force_N, min(self.config.max_force_N, force))
+
         acceleration = force / self.config.mass_kg
         self.state.velocity_m_s += acceleration * dt_s
         self.state.position_m += self.state.velocity_m_s * dt_s
         self.state.time_s += dt_s
         self.state.temperature_C = temperature
         self.state.command = command
-        self.state.current_A = current
+        self.state.current_A = current_magnitude
         self.state.force_N = force
         self.state.impulse_N_s += force * dt_s
-        self.state.electrical_energy_J += voltage * current * dt_s
+        self.state.electrical_energy_J += voltage * current_magnitude * dt_s
         return self.state
 
     def _temperature_step(self, current_A: float, dt_s: float) -> float:
