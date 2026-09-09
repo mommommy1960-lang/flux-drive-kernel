@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Iterable, Mapping
@@ -40,6 +41,7 @@ class HILReport:
     data_completeness_status: str = "basic_channels_only"
     momentum_closure_status: str = "not_assessed"
     propulsion_verdict: str = "not_assessed"
+    integration_method: str = "trapezoidal"
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -50,7 +52,7 @@ def _number(row: Mapping[str, str], name: str, line: int) -> float:
         value = float(row[name])
     except (KeyError, TypeError, ValueError) as exc:
         raise ValueError(f"line {line}: {name} must be numeric") from exc
-    if not value == value or value in (float("inf"), float("-inf")):
+    if not math.isfinite(value):
         raise ValueError(f"line {line}: {name} must be finite")
     return value
 
@@ -63,6 +65,9 @@ def audit_rows(
     require_environment_channels: bool = False,
     momentum_tolerance_N_s: float = 1e-6,
 ) -> HILReport:
+    if not math.isfinite(momentum_tolerance_N_s) or momentum_tolerance_N_s < 0:
+        raise ValueError("momentum_tolerance_N_s must be finite and nonnegative")
+
     materialized = list(rows)
     present = set(materialized[0]) if materialized else set()
     missing = [column for column in REQUIRED_COLUMNS if column not in present]
@@ -84,6 +89,11 @@ def audit_rows(
     count = 0
     first_timestamp: float | None = None
     previous_timestamp: float | None = None
+    previous_force: float | None = None
+    previous_power: float | None = None
+    previous_reaction: float | None = None
+    measured_impulse = 0.0
+    measured_energy = 0.0
     reaction_impulse = 0.0 if "reaction_force_N" in present else None
     peak_force = 0.0
     peak_current = 0.0
@@ -98,21 +108,47 @@ def audit_rows(
             current = _number(row, "measured_current_A", line)
             temperature = _number(row, "measured_temperature_C", line)
             force = _number(row, "measured_force_N", line)
+            reaction = (
+                _number(row, "reaction_force_N", line)
+                if reaction_impulse is not None
+                else None
+            )
+            if voltage < 0:
+                raise ValueError(f"line {line}: measured_voltage_V cannot be negative")
             if first_timestamp is None:
                 first_timestamp = timestamp
             if previous_timestamp is not None and timestamp <= previous_timestamp:
                 errors.append(f"line {line}: timestamps must increase strictly")
                 continue
+
             dt = 0.0 if previous_timestamp is None else timestamp - previous_timestamp
-            previous_timestamp = timestamp
-            bench.step(command, dt_s=max(dt, 1e-9), measured_force_N=force,
-                       measured_current_A=current, measured_temperature_C=temperature,
-                       measured_voltage_V=voltage)
-            if reaction_impulse is not None:
-                reaction_impulse += _number(row, "reaction_force_N", line) * dt
+            instantaneous_power = voltage * abs(current)
+
+            # Trapezoidal integration makes the numerical rule explicit and
+            # prevents the first sample from inventing a nonzero time interval.
+            if previous_timestamp is not None:
+                measured_impulse += 0.5 * (previous_force + force) * dt
+                measured_energy += 0.5 * (previous_power + instantaneous_power) * dt
+                if reaction_impulse is not None:
+                    reaction_impulse += 0.5 * (previous_reaction + reaction) * dt
+
+            bench.step(
+                command,
+                dt_s=dt,
+                measured_force_N=force,
+                measured_current_A=current,
+                measured_temperature_C=temperature,
+                measured_voltage_V=voltage,
+            )
+
             for column in ENVIRONMENT_COLUMNS:
                 if column in present:
                     _number(row, column, line)
+
+            previous_timestamp = timestamp
+            previous_force = force
+            previous_power = instantaneous_power
+            previous_reaction = reaction
             peak_force = max(peak_force, abs(force))
             peak_current = max(peak_current, abs(current))
             peak_temperature = max(peak_temperature, temperature)
@@ -120,7 +156,7 @@ def audit_rows(
             errors.append(str(exc))
 
     duration = 0.0 if first_timestamp is None or previous_timestamp is None else previous_timestamp - first_timestamp
-    residual = None if reaction_impulse is None else bench.state.impulse_N_s + reaction_impulse
+    residual = None if reaction_impulse is None else measured_impulse + reaction_impulse
     if reaction_impulse is None:
         closure = "not_assessed"
         verdict = "not_assessed"
@@ -129,22 +165,32 @@ def audit_rows(
         verdict = "not_assessed"
     elif abs(residual) <= momentum_tolerance_N_s:
         closure = "pass"
-        verdict = "momentum_closed_for_recorded_channels"
+        verdict = "recorded_channels_close_no_propulsion_inference"
     else:
         closure = "fail"
         verdict = "momentum_not_closed"
+
     complete = "complete_channels" if reaction_impulse is not None else "basic_channels_only"
     status = "PASS" if count and not errors and bench.state.safety_trip is None else "FAIL"
+    if require_momentum_channels and closure != "pass":
+        status = "FAIL"
+
     return HILReport(
-        status=status, rows=count, duration_s=duration,
-        measured_impulse_N_s=bench.state.impulse_N_s,
-        measured_electrical_energy_J=bench.state.electrical_energy_J,
-        peak_abs_force_N=peak_force, peak_current_A=peak_current,
+        status=status,
+        rows=count,
+        duration_s=duration,
+        measured_impulse_N_s=measured_impulse,
+        measured_electrical_energy_J=measured_energy,
+        peak_abs_force_N=peak_force,
+        peak_current_A=peak_current,
         peak_temperature_C=peak_temperature if count else 0.0,
-        safety_trip=bench.state.safety_trip, validation_errors=tuple(errors),
-        reaction_impulse_N_s=reaction_impulse, momentum_residual_N_s=residual,
+        safety_trip=bench.state.safety_trip,
+        validation_errors=tuple(errors),
+        reaction_impulse_N_s=reaction_impulse,
+        momentum_residual_N_s=residual,
         data_completeness_status=complete,
-        momentum_closure_status=closure, propulsion_verdict=verdict,
+        momentum_closure_status=closure,
+        propulsion_verdict=verdict,
     )
 
 
@@ -159,7 +205,8 @@ def audit_csv(
     with Path(path).open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         return audit_rows(
-            reader, config,
+            reader,
+            config,
             require_momentum_channels=require_momentum_channels,
             require_environment_channels=require_environment_channels,
             momentum_tolerance_N_s=momentum_tolerance_N_s,
