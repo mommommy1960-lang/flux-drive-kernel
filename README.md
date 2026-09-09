@@ -16,20 +16,22 @@ exist. The kernel therefore enforces a strict boundary between:
   force channels;
 - **verified propulsion**: a future status that may be assigned only after an
   independently calibrated force measurement closes momentum and energy
-  accounting.
+  accounting and survives controlled replication.
 
 ## What works now
 
-- deterministic actuator-bench simulation;
+- deterministic actuator-bench simulation with an explicitly linear signed
+  command/current/force model;
 - command limiting and emergency-stop behavior;
 - over-current and over-temperature trips;
 - force, impulse, electrical energy, and telemetry accounting;
 - hardware-in-the-loop measured-channel API and JSON output;
 - CSV replay with automatic validation and pass/fail reporting;
 - strict reaction-force momentum-closure mode;
-- calibration and uncertainty propagation for measurement-grade data;
+- covariance-aware calibration and uncertainty propagation for measurement-grade data;
+- radiation-momentum reference calculations covering emitted/absorbed and ideal reflected cases;
 - GitHub Actions continuous integration on every push and pull request;
-- standard-library-only tests.
+- a deterministic 100-case software invariant sweep in addition to the unit tests.
 
 Run a short simulation from the repository root:
 
@@ -63,16 +65,19 @@ Run the tests:
 python -m unittest discover -s tests -v
 ```
 
+The current CI result, rather than a manually copied test-count number in a
+document, is the authoritative software-gate status.
+
 ## Measurement boundary
 
-The default model represents a bench actuator. A command produces an
-externally applied force in the model; it does not establish a reactionless
-drive. A real experiment must use an independently calibrated force sensor,
-isolated power measurement, thermal monitoring, and a documented momentum
-accounting model. Do not connect this software directly to high-voltage,
-high-current, vacuum, laser, cryogenic, or propulsion hardware without a
-qualified engineer, an independent safety review, and a physical emergency
-disconnect.
+The default model represents a bench actuator. A command produces a modeled
+externally applied force; it does not establish a reactionless drive. A real
+experiment must use independently calibrated force and reaction measurements,
+isolated power measurement, thermal/environment monitoring, and a declared
+momentum-accounting boundary. Do not connect this software directly to
+high-voltage, high-current, vacuum, laser, cryogenic, or propulsion hardware
+without a qualified engineer, an independent safety review, and a physical
+emergency disconnect.
 
 ## Governance
 
@@ -82,8 +87,15 @@ actions must be attributable and auditable, and simulation/prototype/verified
 implementation/speculation must remain separately labeled.
 
 See [`docs/MEASUREMENT_GRADE_BUILD_PACKAGE.md`](docs/MEASUREMENT_GRADE_BUILD_PACKAGE.md)
-for the controlled bench architecture, uncertainty budget, run sequence, and
-acceptance criteria.
+for the controlled bench architecture, declared system boundary, uncertainty
+budget, run sequence, force-instrument stages, and acceptance criteria.
+
+See [`docs/REVIEWER_EQUATION_SHEET_V0_3.md`](docs/REVIEWER_EQUATION_SHEET_V0_3.md)
+for governing equations, variables, units, assumptions, and falsification gates.
+
+See [`docs/NOVELTY_AND_PRIOR_ART_BOUNDARY.md`](docs/NOVELTY_AND_PRIOR_ART_BOUNDARY.md)
+for what is established prior art, what is an integration contribution, and what
+must not be called novel without a dedicated search.
 
 The concrete first-build materials and assembly sequence are in
 [`docs/LOW_ENERGY_BENCH_MATERIALS_LIST.md`](docs/LOW_ENERGY_BENCH_MATERIALS_LIST.md).
@@ -103,7 +115,7 @@ Run the full non-hardware reproducibility package from the repository root:
 python tools/run_submission_demo.py
 ```
 
-It validates the local Aurora schemas and runs the 25-test software gate. It
+It validates the local Aurora schemas and runs the current software gate. It
 prints `physical_propulsion_proven=false` by design. See
 [`docs/PRE_SUBMISSION_TECHNICAL_AUDIT.md`](docs/PRE_SUBMISSION_TECHNICAL_AUDIT.md),
 [`docs/SUBMISSION_REVIEW_PACKET.md`](docs/SUBMISSION_REVIEW_PACKET.md), and
