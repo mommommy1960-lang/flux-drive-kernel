@@ -33,8 +33,8 @@ with `g = 9.80665 m/s^2` as the conventional standard-gravity reference.
 
 For hover, `a_vertical = 0`, so `F_actuator = mg`.
 
-This is a sizing identity, not evidence that the present Flux Drive can supply
-that force.
+This is a near-surface sizing identity, not an orbital-flight model and not
+evidence that the present Flux Drive can supply that force.
 
 ## 3. Momentum boundary
 
@@ -55,38 +55,63 @@ channels under controls, it is not evidence of a new propulsion mechanism.
 `J = integral F(t) dt = Delta p`
 
 For discretely sampled data, the integration rule and timing uncertainty must be
-specified and frozen before the decisive run.
+specified and frozen before the decisive run. The HIL audit path uses the
+trapezoidal rule and assigns zero duration to the first sample rather than
+inventing an initial interval.
 
 Units: N s = kg m/s.
 
-## 5. Electrical energy
+## 5. Electrical energy at the measured terminals
 
-At the test-article terminals:
+With a declared sign convention:
 
-`E_electrical = integral V(t) I(t) dt`
+`E_net = integral V(t) I(t) dt`
 
-The present software uses current magnitude for positive consumed electrical
-energy in its simplified bench model. A real AC/RF experiment requires the
-appropriate instantaneous or complex-power treatment, including phase and
-harmonics where relevant.
+The HIL audit reports this signed net energy and separately reports
 
-## 6. Electrical input-power ledger
+`E_throughput = integral |V(t) I(t)| dt`
 
-For the current design-accounting interval:
+so regenerative or reversed-current data are not silently converted into
+positive consumed energy.
 
-`P_input = P_actuator + P_control + P_thermal_management + P_losses + P_export`
+The simplified simulated bench model stores current magnitude because it is a
+controller/safety plant, not a four-quadrant electrical model. A real AC/RF
+experiment requires appropriate instantaneous or complex-power treatment,
+including phase and harmonics where relevant.
+
+## 6. Electrical power-flow ledger with storage
+
+For a declared interval:
+
+`P_input + P_storage_discharge`
+
+`= P_actuator + P_control + P_thermal_management + P_losses`
+
+`  + P_export + P_storage_charge`
 
 `P_thermal_management` means electrical load consumed by active cooling/heating
-hardware. It is not a second entry for heat already represented by the other
+hardware. It is not a second entry for heat already represented by other power
 terms.
 
 The residual is:
 
-`R_P = P_input - sum(P_accounted)`
+`R_P = P_sources - P_sinks`
 
 A nonzero residual beyond the declared tolerance means the ledger is incomplete.
+State-of-charge limits and storage efficiency require a separate storage model;
+this equation is instantaneous/interval power bookkeeping.
 
-## 7. Software actuator reference law
+## 7. Thermal power ledger
+
+For a declared thermal control volume:
+
+`Q_generated + Q_absorbed_external = Q_rejected + dU_thermal/dt`
+
+The software reference stores `dU_thermal/dt` as `stored_heat_rate_w`.
+Radiator sizing still requires temperature, emissivity, geometry, view factors,
+coolant behavior, degradation, and mission boundary conditions.
+
+## 8. Software actuator reference law
 
 The default bench model is intentionally ordinary and linear:
 
@@ -106,14 +131,15 @@ Therefore, below force saturation:
 
 This is a controller/HIL plant model only. `K_F` must not be interpreted as a
 measured Flux Drive property unless it is independently calibrated on hardware.
+Measured force channels are never clipped to the simulation's `max_force_N`.
 
-## 8. Radiation momentum reference
+## 9. Radiation momentum reference
 
 For radiation power `P` and an effective normal momentum-transfer factor `eta`:
 
 `F_radiation = eta P / c`
 
-where `c = 299792458 m/s` and, for the simple normal-incidence reference cases:
+where `c = 299792458 m/s` and, for simple normal-incidence reference cases:
 
 - `eta = 1`: emitted radiation or complete absorption;
 - `eta = 2`: ideal specular reflection;
@@ -122,7 +148,7 @@ where `c = 299792458 m/s` and, for the simple normal-incidence reference cases:
 Geometry, spectrum, cavity fields, leakage, and scattering require a real
 model; `eta` is not a free parameter that may be chosen to fit a desired force.
 
-## 9. Linear calibration
+## 10. Linear calibration
 
 For a calibrated channel:
 
@@ -138,7 +164,7 @@ Using first-order uncertainty propagation with possible correlations:
 
 The covariance terms may be set to zero only when independence is justified.
 
-## 10. Momentum-closure uncertainty
+## 11. Momentum-closure uncertainty
 
 For measured force impulse `J_f` and reaction impulse `J_r`:
 
@@ -156,7 +182,42 @@ with the chosen coverage factor `k` stated. A conventional `k=2` interval is
 approximately 95% only under suitable distribution and degrees-of-freedom
 conditions; the report must state the basis for any probability interpretation.
 
-## 11. Physical acceptance gate
+The HIL path can require uncertainty-aware closure. Its older fixed absolute
+tolerance remains only as a software/legacy check and is not sufficient for a
+measurement-grade propulsion claim.
+
+## 12. Conventional reaction-mass propulsion references
+
+Aurora has a separate conventional-propulsion software layer so normal-space
+mobility does not depend on the experimental Flux Drive.
+
+Effective exhaust velocity:
+
+`v_e = I_sp g0`
+
+Ideal rocket equation:
+
+`Delta v = v_e ln(m0 / mf)`
+
+Ideal thrust from propellant mass flow, neglecting pressure-thrust terms:
+
+`F = m_dot v_e`
+
+For an idealized electric thruster where fraction `eta_j` of input electrical
+power becomes directed exhaust kinetic power:
+
+`P_jet = 0.5 m_dot v_e^2`
+
+and therefore:
+
+`F = 2 eta_j P_input / v_e`
+
+These are standard trade-study equations, not hardware selections or promises
+that a city-sized Aurora can achieve a particular delta-v. Tanks, engines,
+structures, power systems, heat rejection, efficiency, lifetime, margins,
+trajectory, and propellant logistics must all be closed independently.
+
+## 13. Physical acceptance gate
 
 A candidate force is not promoted to propulsion evidence unless all of the
 following hold:
@@ -174,7 +235,7 @@ following hold:
 Only after these gates pass should mechanism inference and propulsion sizing
 begin.
 
-## 12. Aurora architecture boundary
+## 14. Aurora architecture boundary
 
 Aurora currently has two separate engineering levels:
 
@@ -182,8 +243,8 @@ Aurora currently has two separate engineering levels:
   architecture.
 - **City-ship:** requirements-level concept requiring independent closure of
   mass, structure, power, thermal rejection, ECLSS, radiation, GNC,
-  communications, maintenance, conventional propulsion, and any experimental
-  propulsion layer.
+  communications, maintenance, conventional propulsion, assembly/logistics,
+  and any experimental propulsion layer.
 
 The Flux Drive must never be the city-ship's only safety-critical mobility
 assumption until it is independently demonstrated. Conventional maneuvering,
@@ -192,8 +253,10 @@ requirements.
 
 ## Reference standards / comparison sources
 
-- NIST Technical Note 1297, uncertainty propagation and expanded uncertainty.
-- NASA/JPL conventional spacecraft propulsion references for momentum exchange.
+- NIST Technical Note 1297 and the GUM family for uncertainty propagation and
+  expanded uncertainty.
+- NASA/JPL conventional spacecraft propulsion references for momentum exchange,
+  electric propulsion, and mission trade methods.
 - Published high-precision propellantless-thrust balance work as prior art for
   thermal, magnetic, cable, orientation, and null-control testing.
 
