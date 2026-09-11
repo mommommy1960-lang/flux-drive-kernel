@@ -1,6 +1,7 @@
 # Aurora/Flux: an auditable systems architecture and falsification protocol for an unverified advanced-propulsion concept
 
-**Author:** Mya P. Brown, independent researcher  
+**Author:** Mya P. Brown, independent researcher, Seattle, Washington, United States  
+**Corresponding author:** mommommy1960@gmail.com  
 **Manuscript status:** pre-submission draft for formal peer review  
 **Evidence status:** software and measurement-protocol contribution; no demonstrated propulsion
 
@@ -8,7 +9,7 @@
 
 Advanced-propulsion proposals are vulnerable to a recurring category error: internally consistent simulation output, instrument response, or incomplete force measurements are treated as evidence of net propulsion. This paper presents Aurora/Flux, an open, auditable software and measurement architecture designed to prevent that promotion error. The implementation separates deterministic simulation, prototype instrumentation, and verified propulsion as distinct states. It records force, impulse, electrical energy, temperature, safety events, configuration, and provenance; provides a hardware-in-the-loop data interface; and fails closed when an independent reaction-force channel is absent from a strict momentum-closure test. The accompanying experimental protocol requires traceable calibration, synchronized raw channels, sham articles, orientation reversals, environmental monitoring, a complete uncertainty budget, preregistered decision thresholds, and independent reproduction. Aurora, a proposed long-duration city-ship architecture, is treated only as a requirements decomposition and systems-integration problem. Flux Drive is treated only as a propulsion hypothesis whose first admissible test is a low-energy force-balance experiment. No net thrust, reactionless propulsion, spacetime engineering, flight readiness, or human-rated capability is claimed. The contribution is a reproducible method for deciding whether a candidate effect should advance, be revised, or be stopped.
 
-**Keywords:** propulsion measurement; momentum closure; uncertainty; falsification; reproducible software; spacecraft systems engineering; research assurance
+**Keywords:** propulsion measurement; momentum closure; uncertainty; falsification; reproducible software; spacecraft systems engineering
 
 ## 1. Introduction
 
@@ -134,13 +135,21 @@ Aurora/Flux converts extraordinary-propulsion review from a narrative exercise i
 
 Source, tests, schemas, example data, and audit materials are available at <https://github.com/mommommy1960-lang/flux-drive-kernel>. Exact release identifiers and archived DOI will be added before formal submission.
 
-## Ethics, safety, and competing interests
-
-No human participants, animals, or operational propulsion hardware were used for this software manuscript. The repository prohibits direct connection to hazardous hardware without qualified engineering supervision, independent safety review, and a physical emergency disconnect. The author declares no competing financial interest. AI tools assisted with drafting and software development; all claims remain subject to author verification and journal disclosure requirements.
-
 ## References
 
 1. National Aeronautics and Space Administration. *NASA Systems Engineering Handbook*, NASA/SP-2016-6105 Rev. 2, 2016. <https://www.nasa.gov/reference/systems-engineering-handbook/>
 2. B. N. Taylor and C. E. Kuyatt. *Guidelines for Evaluating and Expressing the Uncertainty of NIST Measurement Results*, NIST Technical Note 1297, 1994 edition. <https://www.nist.gov/pml/nist-technical-note-1297>
 3. National Aeronautics and Space Administration, Glenn Research Center. *Beginner's Guide to Propulsion*. <https://www.grc.nasa.gov/www/k-12/airplane/bgp.html>
 4. Joint Committee for Guides in Metrology. *Evaluation of measurement data—Guide to the expression of uncertainty in measurement*, JCGM 100:2008. <https://www.bipm.org/en/committees/jc/jcgm/publications>
+
+## Statements and Declarations
+
+**Funding:** The author declares that no funds, grants, or other support were received during the preparation of this manuscript.
+
+**Competing interests:** The author has no relevant financial or non-financial interests to disclose.
+
+**Author contributions:** Mya P. Brown performed the conceptualization, methodology, software development, validation, investigation, project administration, and writing. The author read and approved the final manuscript.
+
+**Ethics and safety:** No human participants, animals, or operational propulsion hardware were used for this software manuscript. The repository prohibits direct connection to hazardous hardware without qualified engineering supervision, independent safety review, and a physical emergency disconnect.
+
+**Use of artificial intelligence:** AI tools assisted with drafting and software development. Mya P. Brown reviewed the manuscript and accepts responsibility for its content and claims.
