@@ -133,7 +133,7 @@ Aurora/Flux converts extraordinary-propulsion review from a narrative exercise i
 
 ## Data and code availability
 
-Source, tests, schemas, example data, and audit materials are available at <https://github.com/mommommy1960-lang/flux-drive-kernel>. Exact release identifiers and archived DOI will be added before formal submission.
+Source, tests, schemas, example data, and audit materials are available at <https://github.com/mommommy1960-lang/flux-drive-kernel>. The submission manuscript and supporting materials are frozen on branch `aurora-flux-formal-review` at revision `e6dd7434ce125b99e4bd962741c486411aacf9b0`. No archived repository DOI has been assigned.
 
 ## References
 
