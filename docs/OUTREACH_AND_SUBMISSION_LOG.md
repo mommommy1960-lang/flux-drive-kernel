@@ -46,7 +46,12 @@ This log records external scientific-review actions and preserves their exact ev
 - The command reported `hardware_io=disabled` and `physical_propulsion_proven=false`.
 - Interpretation: the software-only submission gate passed. This is not physical propulsion evidence.
 - GitHub Actions run `34635679559` (workflow run 125, job `103382845687`) concluded `failure`, but the job exposed zero executed steps and its log download returned `BlobNotFound`.
-- Classification: hosted-run infrastructure failure before meaningful computation. It does not overturn the local software result and provides no physical evidence.
+- A second run, `34635746702` / job `103383066089`, exposed GitHub's exact annotation: `The job was not started because your account is locked due to a billing issue.`
+- Classification: account/billing infrastructure failure before meaningful computation. It does not overturn the local software result and provides no physical evidence.
+- Created `tools/build_submission_evidence.py` and preserved `artifacts/submission_evidence_2026-09-11.json`.
+- Evidence-bundle SHA-256: `643b2067fee83702e6fdb25662860f279fee6ce957cbf3e16a00fa28161bbb5a`.
+- Source-manifest SHA-256: `dad9ec401b476097f6e165a80697deaa226a6c12704471fcd0cf3813395097ae`.
+- The evidence bundle reports all three checks passed, hardware disabled, no random seeds, and `physical_propulsion_proven=false`.
 
 ## Codespace preservation status
 
