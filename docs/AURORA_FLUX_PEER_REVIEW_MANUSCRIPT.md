@@ -31,7 +31,9 @@ The architecture defines three non-interchangeable evidence states.
 
 Promotion is denied if provenance is incomplete, required channels are missing, a safety event occurred, the uncertainty budget is incomplete, controls were not executed, or the reaction channel does not close. This implements a falsification-first rule: the system seeks the least extraordinary adequate explanation before advancing a claim.
 
-## 3. Software architecture
+## 3. Methods
+
+### 3.1 Software architecture
 
 The reference kernel is implemented in Python with standard-library tests. It provides:
 
@@ -47,21 +49,11 @@ The reference kernel is implemented in Python with standard-library tests. It pr
 
 The default simulated relationship between command, current, and force is a reference plant, not a physical claim. Its purpose is to test control logic, units, sign conventions, accounting, and failure behavior before measurements are interpreted.
 
-Strict audit mode requires both a primary force channel and an independent reaction channel. If the reaction channel is absent, the result is `not_assessed` or a failed strict audit; it cannot be reported as momentum closure. For signed impulses,
-
-\[
-I_{p}=\int F_{p}(t)\,dt, \qquad I_{r}=\int F_{r}(t)\,dt,
-\]
-
-and the closure residual is
-
-\[
-I_{\mathrm{res}}=I_{p}+I_{r}.
-\]
+Strict audit mode requires both a primary force channel and an independent reaction channel. If the reaction channel is absent, the result is `not_assessed` or a failed strict audit; it cannot be reported as momentum closure. The software integrates each signed force channel over time to obtain the primary and reaction impulses, then defines the closure residual as their signed sum.
 
 Acceptance requires the residual to be consistent with zero within the predeclared expanded uncertainty of both channels. A nonzero primary impulse accompanied by an equal-and-opposite reaction is ordinary momentum exchange, not reactionless propulsion.
 
-## 4. Measurement protocol
+### 3.2 Measurement protocol
 
 The minimum physical test is a low-energy, mechanically constrained bench experiment with six isolated functions: test article, primary force transducer, independent reaction transducer or fixture, isolated electrical measurement, environmental monitoring, and an independently interruptible safety/data controller.
 
@@ -81,7 +73,7 @@ The uncertainty budget includes calibration slope and offset, resolution, noise,
 
 A result advances only when it exceeds the complete preregistered uncertainty threshold, survives all controls, closes declared momentum and energy channels, and is reproduced by an independent operator. A single-axis sensor can screen a low-energy setup; any candidate anomalous force must advance to multi-axis force/torque validation.
 
-## 5. Aurora city-ship boundary
+### 3.3 Aurora city-ship boundary
 
 Aurora is not presented as a build-ready spacecraft. It is a systems-engineering frame that makes the missing work visible. A credible long-duration inhabited vehicle requires quantitative budgets and verified interfaces for at least structure, mass properties, power generation and distribution, thermal rejection, environmental control and life support, radiation protection, guidance-navigation-control, communications, propulsion, maintenance, fault containment, logistics, human factors, and governance.
 
@@ -89,7 +81,7 @@ The propulsion hypothesis cannot substitute for those subsystems. Conversely, a 
 
 This separation follows established systems-engineering practice: requirements, verification methods, interfaces, risks, and configuration states must be traceable across the life cycle. Aurora presently remains at the concept and requirements stage.
 
-## 6. Falsification rules
+### 3.4 Falsification rules
 
 The Flux hypothesis is stopped or revised under any of the following conditions:
 
@@ -104,7 +96,7 @@ The Flux hypothesis is stopped or revised under any of the following conditions:
 
 An unexplained residual that survives one apparatus is not a discovery claim. It is a trigger for stronger controls, independent calibration, and replication.
 
-## 7. Reproducibility and current validation
+## 4. Results
 
 The public repository contains source code, schemas, example data, audit documents, and automated tests. The non-hardware submission check is:
 
@@ -112,15 +104,29 @@ The public repository contains source code, schemas, example data, audit documen
 python tools/run_submission_demo.py
 ```
 
-This command validates schemas, executes the local software tests, and reports the software-only evidence boundary. It does not activate RF, acoustic, high-voltage, high-current, vacuum, laser, cryogenic, stored-energy, or propulsion hardware. The current scientific status must be taken from the repository revision and its hosted continuous-integration record, not from a manually copied test count.
+This command validates schemas, executes the local software tests, and reports the software-only evidence boundary. It does not activate RF, acoustic, high-voltage, high-current, vacuum, laser, cryogenic, stored-energy, or propulsion hardware.
 
-## 8. Limitations
+On 11 September 2026, the submission command exited successfully. Twenty-five software tests passed and three Aurora schemas were validated. The reported state was `hardware_io=disabled` and `physical_propulsion_proven=false`. A deterministic evidence bundler preserved the command output, runtime, source-file hashes, and source-manifest hash. No random sampling was used in this software verification run.
+
+GitHub-hosted execution did not produce a computational result. The job stopped before checkout or test execution because GitHub reported an account-level billing authorization lock. This is classified as an infrastructure failure and is not combined with the local result.
+
+The observed result therefore supports only the claim that the tested local software package satisfied its declared software checks. It supplies no evidence of physical force, net thrust, or vehicle performance.
+
+## 5. Discussion
+
+The result demonstrates the practical value of explicit evidence states. The same run that verifies deterministic safety and audit behavior also emits a machine-readable denial of physical propulsion proof. This prevents a passing software suite from being promoted into a physical claim.
+
+The strict reaction-channel rule is intentionally asymmetric: incomplete evidence cannot pass. A candidate primary-force signal without a synchronized independent reaction measurement remains unassessed rather than anomalous. Similarly, a residual that appears only after post-hoc filtering or incomplete environmental controls cannot advance.
+
+For Aurora, the method prevents systems-level completeness from being inferred from a propulsion concept. Even a future validated actuator would leave mass, power, thermal, life-support, radiation, control, maintenance, and governance requirements unresolved. The city-ship architecture remains useful as a traceability framework while remaining unverified as a vehicle.
+
+## 6. Limitations
 
 The current project has no measurement-grade physical thrust dataset, no independently calibrated actuator result, no demonstrated external momentum channel for the proposed acoustic/electromagnetic concepts, and no independent replication. It has not established reactionless propulsion, faster-than-light travel, spacetime-curvature control, useful vehicle thrust, flight safety, or human-rated life support. Software correctness cannot certify an instrument or physical claim.
 
 The current contribution is therefore methodological: an auditable boundary between idea, simulation, measurement, and verified engineering.
 
-## 9. Conclusion
+## 7. Conclusion
 
 Aurora/Flux converts extraordinary-propulsion review from a narrative exercise into a set of executable gates. The architecture preserves negative results, rejects incomplete momentum accounting, and prevents a city-ship concept from being presented as demonstrated hardware. The appropriate next scientific decision is not whether Aurora will fly. It is whether an independent reviewer considers the low-energy, measurement-grade protocol sufficient to test a bounded actuator hypothesis. The admissible outcomes are: proceed to controlled experiment, revise the model or measurement design, or stop because the claim is not physically supported.
 
@@ -138,4 +144,3 @@ No human participants, animals, or operational propulsion hardware were used for
 2. B. N. Taylor and C. E. Kuyatt. *Guidelines for Evaluating and Expressing the Uncertainty of NIST Measurement Results*, NIST Technical Note 1297, 1994 edition. <https://www.nist.gov/pml/nist-technical-note-1297>
 3. National Aeronautics and Space Administration, Glenn Research Center. *Beginner's Guide to Propulsion*. <https://www.grc.nasa.gov/www/k-12/airplane/bgp.html>
 4. Joint Committee for Guides in Metrology. *Evaluation of measurement data—Guide to the expression of uncertainty in measurement*, JCGM 100:2008. <https://www.bipm.org/en/committees/jc/jcgm/publications>
-
