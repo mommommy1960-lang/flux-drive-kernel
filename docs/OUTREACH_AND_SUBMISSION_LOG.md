@@ -45,6 +45,8 @@ This log records external scientific-review actions and preserves their exact ev
 - Result: exit code `0`; 25 software tests passed; three Aurora schemas checked.
 - The command reported `hardware_io=disabled` and `physical_propulsion_proven=false`.
 - Interpretation: the software-only submission gate passed. This is not physical propulsion evidence.
+- GitHub Actions run `34635679559` (workflow run 125, job `103382845687`) concluded `failure`, but the job exposed zero executed steps and its log download returned `BlobNotFound`.
+- Classification: hosted-run infrastructure failure before meaningful computation. It does not overturn the local software result and provides no physical evidence.
 
 ## Codespace preservation status
 
