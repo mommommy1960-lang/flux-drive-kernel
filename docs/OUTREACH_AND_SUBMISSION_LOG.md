@@ -39,9 +39,15 @@ This log records external scientific-review actions and preserves their exact ev
 - Venue selection remains constrained to a legitimate journal with relevant scope and no mandatory author charge.
 - No journal submission, acceptance, endorsement, or peer-review outcome exists yet.
 
+## 2026-09-11 — Reproducibility gate
+
+- Ran `python tools/run_submission_demo.py` from the repository package.
+- Result: exit code `0`; 25 software tests passed; three Aurora schemas checked.
+- The command reported `hardware_io=disabled` and `physical_propulsion_proven=false`.
+- Interpretation: the software-only submission gate passed. This is not physical propulsion evidence.
+
 ## Codespace preservation status
 
 - The named Sage Codespace URL resolves, but the controlled browser remained at GitHub's sign-in gate even after the user signed in elsewhere; those sessions did not share authentication.
 - Repository work continued through the authenticated GitHub connection.
 - The Codespace deletion clock has **not** been claimed as reset until the Codespace itself is successfully opened.
-
