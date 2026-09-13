@@ -1,0 +1,23 @@
+{
+  "run_id": "CAL00-YYYYMMDD-001",
+  "software_commit": "REPLACE_WITH_GIT_SHA",
+  "apparatus_config_hash": "REPLACE_WITH_CONFIG_HASH",
+  "operator_id": "REPLACE_WITH_OPERATOR_ID",
+  "condition": "NULL",
+  "calibration_record_id": "REPLACE_WITH_CALIBRATION_ID",
+  "timestamp_source": "REPLACE_WITH_TIMESTAMP_SOURCE",
+  "channels": {
+    "article_force_N": "present",
+    "reaction_force_N": "present",
+    "voltage_V": "present",
+    "current_A": "present",
+    "temperature_C": "present",
+    "environment": "present"
+  },
+  "expanded_uncertainty_impulse_N_s": 0.001,
+  "acceptance": {
+    "known_force_recovery": null,
+    "null_discrimination": null,
+    "reversal_consistent": null
+  }
+}
