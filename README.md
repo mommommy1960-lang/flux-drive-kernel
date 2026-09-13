@@ -18,6 +18,14 @@ exist. The kernel enforces a strict boundary between:
   budget, control conditions, momentum/energy accounting, and independent
   replication.
 
+## Commons project nervous system
+
+Flux is connected to the wider Commons research program through
+[`COMMONS_BRIDGE.md`](COMMONS_BRIDGE.md). That bridge points to the shared
+continuity spine and to Aurora Sovereign Core so future sessions and
+collaborators can locate current status, dependencies, evidence boundaries, and
+handoffs without reconstructing them from chat history.
+
 ## What works now
 
 - deterministic actuator-bench simulation with an explicitly linear signed
