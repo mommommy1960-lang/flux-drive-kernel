@@ -1,5 +1,7 @@
 # Flux Drive Kernel
 
+> **FUNDERS / LABS / REVIEWERS / PARTNERS:** [Start with the current funding and physical-validation boundary](FUNDING_AND_PHYSICAL_VALIDATION_START_HERE.md). It states exactly what is already complete, what physical evidence is still missing, what support would unlock CAL-00, and what the program will not claim without evidence.
+
 This repository contains the executable, testable layer of the Commons Flux
 Drive research program and Aurora reference architecture: a safe actuator-bench,
 hardware-in-the-loop audit path, metrology utilities, and conventional
