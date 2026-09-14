@@ -6,6 +6,10 @@
 
 Ensure every claimed residual is traceable to calibrated measurements and a declared uncertainty model before any interpretation is attempted.
 
+## Frozen CAL-00 design targets
+
+Instrument selection for CAL-00 is governed by [`CAL00_FORCE_RANGE_AND_UNCERTAINTY_REQUIREMENTS_V0_1.md`](CAL00_FORCE_RANGE_AND_UNCERTAINTY_REQUIREMENTS_V0_1.md). The current pre-instrument-selection targets are a bipolar force range of at least -100 uN to +100 uN, combined standard uncertainty <=1.0 uN, expanded uncertainty <=2.0 uN initially using coverage factor k=2, minimum 100 samples/s force acquisition, and an 80% calibrated-range saturation ceiling. These are design requirements, not measurements or predictions of a Flux effect.
+
 ## Channel classes
 
 ### Force and reaction force
