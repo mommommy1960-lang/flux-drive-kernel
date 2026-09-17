@@ -1,0 +1,1 @@
+timestamp_s,command,measured_voltage_V,measured_current_A,measured_temperature_C,measured_force_N,reaction_force_N,vibration_x_m_s2,vibration_y_m_s2,vibration_z_m_s2,magnetic_field_uT,acoustic_pressure_Pa,ambient_pressure_Pa,orientation_deg
