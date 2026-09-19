@@ -64,3 +64,18 @@ vector, followed by numerical all-observer energy-condition evaluation.
 3. Solve the shell metric functions and compare exterior Schwarzschild limits.
 4. Recompute the Eulerian stress-energy tensor.
 5. Only then add the shift vector and test the stated velocity threshold.
+
+## Hosted-CI reconciliation
+
+GitHub Actions run 35459011481 tested intermediate commit `65bec85` and failed
+during test discovery because `tests/test_positive_energy_shell.py` was present
+before `flux_drive_kernel/positive_energy_shell.py` became reachable from that
+intermediate branch head. The reported exception was:
+
+    ModuleNotFoundError: No module named 'flux_drive_kernel.positive_energy_shell'
+
+This was a commit-order/integration failure, not a failed equation assertion.
+The branch was then verified to contain the module, test, and this report.
+A new sequential reconciliation commit was created to trigger hosted validation
+against the complete file set. The failed run remains preserved and must not be
+described as green.
