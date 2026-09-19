@@ -22,8 +22,21 @@ def _interp(
             low = middle
         else:
             high = middle
-    fraction = (radius - radii[low]) / (radii[high] - radii[low])
-    return values[low] * (1.0 - fraction) + values[high] * fraction
+    if len(radii) < 4:
+        fraction = (radius - radii[low]) / (radii[high] - radii[low])
+        return values[low] * (1.0 - fraction) + values[high] * fraction
+    start = max(0, min(low - 1, len(radii) - 4))
+    indices = range(start, start + 4)
+    result = 0.0
+    for i in indices:
+        basis = 1.0
+        for j in indices:
+            if i != j:
+                basis *= (
+                    (radius - radii[j]) / (radii[i] - radii[j])
+                )
+        result += values[i] * basis
+    return result
 
 
 def static_cartesian_metric(
