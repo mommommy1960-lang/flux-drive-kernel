@@ -37,7 +37,6 @@ This log records external scientific-review actions and preserves their exact ev
 - The manuscript does **not** claim demonstrated thrust, reactionless propulsion, flight readiness, a human-rated city ship, or spacetime engineering.
 - JOSS was screened out as an immediate submission route because its current review criteria expect feature-complete research software with a substantial public development history; the present repository is too recent for a defensible immediate submission there.
 - Venue selection remains constrained to a legitimate journal with relevant scope and no mandatory author charge.
-- No journal submission, acceptance, endorsement, or peer-review outcome exists yet.
 
 ## 2026-09-11 — Reproducibility gate
 
@@ -52,6 +51,54 @@ This log records external scientific-review actions and preserves their exact ev
 - Evidence-bundle SHA-256: `643b2067fee83702e6fdb25662860f279fee6ce957cbf3e16a00fa28161bbb5a`.
 - Source-manifest SHA-256: `dad9ec401b476097f6e165a80697deaa226a6c12704471fcd0cf3813395097ae`.
 - The evidence bundle reports all three checks passed, hardware disabled, no random seeds, and `physical_propulsion_proven=false`.
+
+## 2026-09-18 — Aerospace Systems decision
+
+- Submission ID: `0bf95d29-b59a-4d58-a56b-9bf645022c9a`.
+- Manuscript: *Aurora/Flux: an auditable systems architecture and falsification protocol for an unverified advanced-propulsion concept*.
+- The journal rejected the manuscript for publication.
+- The decision email included no reviewer comments or technical critique.
+- Interpretation: publication outcome only. It neither validates nor experimentally disproves the Flux hypothesis.
+- Status: revise the paper package and select a suitable next venue only after the evidence and venue-fit review.
+
+## 2026-09-19 — Direct critical-review outreach
+
+Six bounded messages were transmitted. They requested skeptical review, measurement guidance, or routing and did not request endorsement:
+
+1. Professor Benjamin Jorns — `bjorns@umich.edu`.
+2. University of Michigan PEPL — `pepl_webmaster@umich.edu`.
+3. Paihau–Robinson Research Institute routing contact — `Jackson.miller@vuw.ac.nz`.
+4. NASA/JPL electric-propulsion contact — `Robert.B.Lobbia@jpl.nasa.gov`.
+5. University of Canterbury — `info@canterbury.ac.nz`.
+6. Wellington UniVentures — attempted at `info@wellingtonunventures.nz`.
+
+Delivery evidence:
+
+- University of Canterbury issued an automated acknowledgment and stated that a response should arrive within two working days. This is receipt confirmation, not scientific review or endorsement.
+- Wellington UniVentures did **not** receive the message. Gmail returned an address failure because the domain `wellingtonunventures.nz` could not be found. Do not resend until the official current route is independently verified.
+- No substantive reply from the other four recipients is recorded at this update.
+
+## 2026-09-19 — Official contact-form wave
+
+Prepared, not yet represented as submitted unless a dated confirmation is added below:
+
+- NASA Glenn Research Center
+- NASA Marshall Space Flight Center
+- European Space Agency
+- The Aerospace Corporation
+- AIAA
+- University of Washington College of Engineering
+- University of Surrey Engineering
+- Purdue College of Engineering
+- University of Colorado Boulder Aerospace Engineering
+
+Each submission must preserve its exact route, date, subject, and confirmation evidence. A browser attempt or page visit is not a submission.
+
+## Standing disclosure and interpretation boundary
+
+First-contact disclosure is limited to the public repository, public concept sheet, equation sheet, control matrix, uncertainty plan, and low-energy measurement-bench plan. Do not transmit unpublished implementation details, private Aurora material, patent-sensitive drawings, protected schematics, credentials, or security-sensitive files.
+
+Interest, acknowledgment, referral, correspondence, software tests, and paper analysis are not physical propulsion validation. Null results, refusals, delivery failures, and nonresponses remain part of the evidence record.
 
 ## Codespace preservation status
 
