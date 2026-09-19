@@ -169,6 +169,49 @@ def energy_condition_margins_pa(
     }
 
 
+
+def static_einstein_sources_pa(
+    radii_m: Sequence[float],
+    e2a: Sequence[float],
+    e2b: Sequence[float],
+) -> tuple[list[float], list[float], list[float]]:
+    """Reconstruct epsilon, P_r, P_t from the static spherical metric.
+
+    Centered finite differences are used at interior points. Endpoints are NaN
+    because the spherical formulas and one-sided second derivatives are not an
+    independent consistency check there.
+    """
+    r, lapse2, radial = _profiles(radii_m, e2a, e2b)
+    if any(x <= 0.0 for x in lapse2 + radial):
+        raise ValueError("metric functions must be positive")
+    a = [0.5 * math.log(x) for x in lapse2]
+    b = [0.5 * math.log(x) for x in radial]
+    eps = [math.nan] * len(r)
+    pr = [math.nan] * len(r)
+    pt = [math.nan] * len(r)
+    for i in range(1, len(r) - 1):
+        if r[i] == 0.0:
+            continue
+        hm = r[i] - r[i - 1]
+        hp = r[i + 1] - r[i]
+        if abs(hm - hp) > 1.0e-10 * max(hm, hp):
+            raise ValueError("Einstein reconstruction currently requires a uniform grid")
+        h = 0.5 * (hm + hp)
+        ap = (a[i + 1] - a[i - 1]) / (2.0 * h)
+        bp = (b[i + 1] - b[i - 1]) / (2.0 * h)
+        app = (a[i + 1] - 2.0 * a[i] + a[i - 1]) / (h * h)
+        inv_grr = 1.0 / radial[i]
+        inv_r = 1.0 / r[i]
+        geometric_rho = inv_grr * (2.0 * bp * inv_r - inv_r**2) + inv_r**2
+        geometric_pr = inv_grr * (2.0 * ap * inv_r + inv_r**2) - inv_r**2
+        geometric_pt = inv_grr * (
+            app + ap * ap - ap * bp + (ap - bp) * inv_r
+        )
+        eps[i] = geometric_rho * C**4 / (8.0 * math.pi * G)
+        pr[i] = geometric_pr * C**4 / (8.0 * math.pi * G)
+        pt[i] = geometric_pt * C**4 / (8.0 * math.pi * G)
+    return eps, pr, pt
+
 def diagonal_energy_conditions(
     energy_density_pa: float,
     radial_pressure_pa: float,
