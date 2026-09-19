@@ -204,3 +204,21 @@ def scan_zero_tidal_metric(
         )
     return tuple(points)
 
+def zero_tidal_lateral_acceleration_m_s2(
+    throat_radius_m: float,
+    traveler_speed_m_s: float,
+    body_separation_m: float = 2.0,
+) -> float:
+    """Return throat lateral geodesic-deviation acceleration magnitude.
+
+    For b=r0^2/r and constant redshift, the throat estimate is
+    gamma^2 v^2 L/r0^2. This is a traveler constraint, not a stability proof.
+    """
+    r0 = _finite("throat_radius_m", throat_radius_m)
+    speed = _finite("traveler_speed_m_s", traveler_speed_m_s)
+    separation = _finite("body_separation_m", body_separation_m)
+    if r0 <= 0.0 or separation < 0.0 or abs(speed) >= C_M_S:
+        raise ValueError("require positive throat, nonnegative separation, and |speed| < c")
+    gamma_sq = 1.0 / (1.0 - (speed / C_M_S) ** 2)
+    return gamma_sq * speed**2 * separation / r0**2
+
