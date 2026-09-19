@@ -10,6 +10,7 @@ from flux_drive_kernel.shell_metric import (
     energy_condition_margins_pa,
     integrate_tov_pressure_pa,
     radial_metric,
+    static_einstein_sources_pa,
     tangential_pressure_pa,
     tov_gradient_pa_m,
 )
@@ -49,6 +50,19 @@ class ShellMetricTests(unittest.TestCase):
         pt = tangential_pressure_pa(radii, density, pressure, mass)
         self.assertEqual(len(pt), len(radii))
         self.assertTrue(all(math.isfinite(x) for x in pt))
+        eps_g, pr_g, pt_g = static_einstein_sources_pa(radii, e2a, e2b)
+        interior = [i for i, radius in enumerate(radii) if 11.0 <= radius <= 19.0]
+        rho_error = max(
+            abs(eps_g[i] - density[i] * C * C) / (density[i] * C * C)
+            for i in interior
+        )
+        pressure_scale = max(pressure[i] for i in interior)
+        pr_error = max(
+            abs(pr_g[i] - pressure[i]) / pressure_scale for i in interior
+        )
+        self.assertLess(rho_error, 5.0e-4)
+        self.assertLess(pr_error, 5.0e-3)
+        self.assertTrue(all(math.isfinite(pt_g[i]) for i in interior))
 
     def _smoothed_trial(self, dr, density_span, pressure_span):
         target_mass = 4.49e27
