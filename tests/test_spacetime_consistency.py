@@ -9,6 +9,7 @@ from flux_drive_kernel.spacetime_consistency import (
     scan_zero_tidal_metric,
     zero_tidal_shape_m,
     zero_tidal_stress_energy,
+    zero_tidal_lateral_acceleration_m_s2,
 )
 
 
@@ -54,6 +55,12 @@ class InputValidationTests(unittest.TestCase):
 
 
 class FrozenMetricTensorTests(unittest.TestCase):
+    def test_lateral_tidal_acceleration_is_zero_at_rest_and_scales(self):
+        self.assertEqual(zero_tidal_lateral_acceleration_m_s2(10.0, 0.0), 0.0)
+        low = zero_tidal_lateral_acceleration_m_s2(10.0, 1000.0)
+        wide = zero_tidal_lateral_acceleration_m_s2(20.0, 1000.0)
+        self.assertAlmostEqual(low / wide, 4.0)
+
     def test_shape_function_matches_throat_and_decays(self):
         self.assertEqual(zero_tidal_shape_m(10.0, 10.0), 10.0)
         self.assertEqual(zero_tidal_shape_m(20.0, 10.0), 5.0)
