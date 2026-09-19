@@ -78,15 +78,21 @@ Delivery evidence:
 - Wellington UniVentures did **not** receive the message. Gmail returned an address failure because the domain `wellingtonunventures.nz` could not be found. Do not resend until the official current route is independently verified.
 - No substantive reply from the other four recipients is recorded at this update.
 
-## 2026-09-19 — Official contact-form wave
+## 2026-09-19 — Official routing wave
 
-Prepared, not yet represented as submitted unless a dated confirmation is added below:
+- AIAA's current public contact page identifies `custserv@aiaa.org` as its customer-service route rather than providing a research contact form.
+- A bounded request was sent to that verified address asking to be routed to the appropriate technical committee, publication contact, standards activity, or professional member for precision-thrust measurement and experimental controls.
+- Gmail message id: `1a0ba1e2186fd0ee`.
+- Interpretation: routing request only; not technical review or endorsement.
+
+The remaining previously saved routes are not represented as submitted. Live verification found that several URLs are stale, redirect to unrelated pages, return 404, or expose no message form. The Aerospace Corporation page blocked this automated browser. Current official routes must be verified individually before transmission.
+
+Remaining queue:
 
 - NASA Glenn Research Center
 - NASA Marshall Space Flight Center
 - European Space Agency
 - The Aerospace Corporation
-- AIAA
 - University of Washington College of Engineering
 - University of Surrey Engineering
 - Purdue College of Engineering
