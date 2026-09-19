@@ -6,6 +6,9 @@ from flux_drive_kernel.spacetime_consistency import (
     alcubierre_top_hat_shape,
     assess_morris_thorne_throat,
     required_average_speed_m_s,
+    scan_zero_tidal_metric,
+    zero_tidal_shape_m,
+    zero_tidal_stress_energy,
 )
 
 
@@ -48,6 +51,50 @@ class InputValidationTests(unittest.TestCase):
             alcubierre_top_hat_shape(-1.0, 10.0, 1.0)
         with self.assertRaises(ValueError):
             required_average_speed_m_s(1.0, 0.0)
+
+
+class FrozenMetricTensorTests(unittest.TestCase):
+    def test_shape_function_matches_throat_and_decays(self):
+        self.assertEqual(zero_tidal_shape_m(10.0, 10.0), 10.0)
+        self.assertEqual(zero_tidal_shape_m(20.0, 10.0), 5.0)
+
+    def test_complete_diagonal_has_expected_symmetry_and_signs(self):
+        source = zero_tidal_stress_energy(10.0, 10.0)
+        diagonal = source.tensor_diagonal_j_m3()
+        self.assertEqual(len(diagonal), 4)
+        self.assertAlmostEqual(diagonal[2], diagonal[3])
+        self.assertLess(source.energy_density_j_m3, 0.0)
+        self.assertLess(source.radial_pressure_j_m3, 0.0)
+        self.assertGreater(source.tangential_pressure_j_m3, 0.0)
+        self.assertLess(source.radial_nec_j_m3, 0.0)
+        self.assertAlmostEqual(
+            source.tangential_nec_j_m3,
+            0.0,
+            delta=abs(source.energy_density_j_m3) * 1e-14,
+        )
+
+    def test_throat_energy_scale_falls_as_inverse_radius_squared(self):
+        small = zero_tidal_stress_energy(10.0, 10.0)
+        large = zero_tidal_stress_energy(20.0, 20.0)
+        self.assertAlmostEqual(
+            abs(small.energy_density_j_m3) / abs(large.energy_density_j_m3),
+            4.0,
+        )
+
+    def test_radial_decay_is_inverse_fourth_power(self):
+        near = zero_tidal_stress_energy(10.0, 10.0)
+        far = zero_tidal_stress_energy(20.0, 10.0)
+        self.assertAlmostEqual(
+            abs(near.energy_density_j_m3) / abs(far.energy_density_j_m3),
+            16.0,
+        )
+
+    def test_scan_preserves_nec_failure_and_does_not_claim_stability(self):
+        points = scan_zero_tidal_metric(10.0, (1.0, 1.5, 2.0, 5.0))
+        self.assertEqual(len(points), 4)
+        self.assertTrue(all(point.horizon_free_at_point for point in points))
+        self.assertTrue(all(point.stress_energy.radial_nec_j_m3 < 0.0 for point in points))
+        self.assertTrue(all(not point.stability_assessed for point in points))
 
 
 if __name__ == "__main__":
