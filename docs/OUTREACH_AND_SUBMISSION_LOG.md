@@ -52,6 +52,41 @@ This log records external scientific-review actions and preserves their exact ev
 - Source-manifest SHA-256: `dad9ec401b476097f6e165a80697deaa226a6c12704471fcd0cf3813395097ae`.
 - The evidence bundle reports all three checks passed, hardware disabled, no random seeds, and `physical_propulsion_proven=false`.
 
+## Historical outreach deduplication registry — verified from Sent mail
+
+The following routes were already contacted during the September 8–13 campaign. Do not send a new cold message to them. Any new communication must use the existing thread, identify the material change, and be logged as a follow-up:
+
+### September 8
+
+- University of Washington Aeronautics & Astronautics — `aa-chair@uw.edu`; the same message included blind-copy routes `nasa@uw.edu`, `communications@pnwaiaa.org`, `cfmlab@uw.edu`, and `uwal-kwt@uw.edu`.
+- University of Surrey — `a.luccafabris@surrey.ac.uk` and `smp-office@surrey.ac.uk`.
+- Pacific Northwest Aerospace Alliance — `nmalcom@pnaa.net` and `contact@pnaa.net`.
+- Michelli Weighing & Measurement — `info@michelli.com`.
+- University of Washington — `littlej7@uw.edu`.
+- Morehouse Instrument Company — `info@mhforce.com`.
+- MIT — `plozano@mit.edu`.
+- NASA — `Alicia.Graham@nasa.gov`.
+- University of Florida — `roy@ufl.edu`.
+
+Several of these received a technical-update reply later the same day. That update is part of the existing thread, not a separate recipient.
+
+### September 10
+
+- UC Davis / JPAS route — `nsarigulklijn@ucdavis.edu`.
+- Professor Martin Tajmar — `martin.tajmar@tu-dresden.de`.
+- Sabine Hossenfelder routing channel — `sabine@mediamobilize.com`.
+- Stanford Leinweber Institute for Theoretical Physics — `litpadmin@stanford.edu`.
+- Waterloo Rocketry — `contact@waterloorocketry.com`, copied to `ajbmilne@uwaterloo.ca`.
+
+### September 13
+
+- Orbital Metrology — `sid@orbitalmetrology.com`.
+- Seattle University Mechanical Engineering — `me@seattleu.edu`.
+- University of Washington Mechanical Test Lab — `mechtest@uw.edu`.
+- University of Washington — `littlej7@uw.edu` (already contacted September 8; this later message is recorded as a follow-up/second bounded request, not a new recipient).
+
+This registry was reconstructed from Gmail's Sent records on September 19, 2026. It supersedes any shorter recipient list for deduplication purposes. It records transmission, not delivery, reading, technical review, agreement, or endorsement.
+
 ## 2026-09-18 — Aerospace Systems decision
 
 - Submission ID: `0bf95d29-b59a-4d58-a56b-9bf645022c9a`.
