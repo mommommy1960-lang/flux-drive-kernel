@@ -95,3 +95,112 @@ def required_average_speed_m_s(distance_m: float, transit_time_s: float) -> floa
     if distance < 0.0 or duration <= 0.0:
         raise ValueError("distance must be nonnegative and transit_time_s positive")
     return distance / duration
+
+@dataclass(frozen=True)
+class OrthonormalStressEnergy:
+    """Diagonal orthonormal stress-energy components, all in J/m^3."""
+
+    energy_density_j_m3: float
+    radial_pressure_j_m3: float
+    tangential_pressure_j_m3: float
+
+    @property
+    def radial_nec_j_m3(self) -> float:
+        return self.energy_density_j_m3 + self.radial_pressure_j_m3
+
+    @property
+    def tangential_nec_j_m3(self) -> float:
+        return self.energy_density_j_m3 + self.tangential_pressure_j_m3
+
+    def tensor_diagonal_j_m3(self) -> tuple[float, float, float, float]:
+        return (
+            self.energy_density_j_m3,
+            self.radial_pressure_j_m3,
+            self.tangential_pressure_j_m3,
+            self.tangential_pressure_j_m3,
+        )
+
+
+@dataclass(frozen=True)
+class ZeroTidalScanPoint:
+    throat_radius_m: float
+    radius_m: float
+    shape_m: float
+    shape_derivative: float
+    horizon_free_at_point: bool
+    stress_energy: OrthonormalStressEnergy
+    stability_assessed: bool = False
+
+
+def zero_tidal_shape_m(radius_m: float, throat_radius_m: float) -> float:
+    """Return b(r)=r0^2/r for the frozen zero-redshift metric."""
+    r = _finite("radius_m", radius_m)
+    r0 = _finite("throat_radius_m", throat_radius_m)
+    if r0 <= 0.0 or r < r0:
+        raise ValueError("require throat_radius_m > 0 and radius_m >= throat_radius_m")
+    return r0**2 / r
+
+
+def zero_tidal_shape_derivative(radius_m: float, throat_radius_m: float) -> float:
+    """Return db/dr for b(r)=r0^2/r."""
+    r = _finite("radius_m", radius_m)
+    r0 = _finite("throat_radius_m", throat_radius_m)
+    if r0 <= 0.0 or r < r0:
+        raise ValueError("require throat_radius_m > 0 and radius_m >= throat_radius_m")
+    return -(r0**2) / r**2
+
+
+def zero_tidal_stress_energy(radius_m: float, throat_radius_m: float) -> OrthonormalStressEnergy:
+    """Return the complete diagonal source for the frozen metric.
+
+    Frozen ansatz:
+        ds^2 = -c^2 dt^2 + dr^2/(1-b/r) + r^2 dOmega^2
+        b(r) = r0^2/r
+
+    In an orthonormal frame and SI energy-density units:
+        epsilon = (c^4/8 pi G) b'/r^2
+        p_r     = -(c^4/8 pi G) b/r^3
+        p_t     = (c^4/16 pi G) (b-r b')/r^3
+
+    Symmetry makes all off-diagonal components zero. This derives a required
+    source; it does not identify matter capable of producing it.
+    """
+    r = _finite("radius_m", radius_m)
+    r0 = _finite("throat_radius_m", throat_radius_m)
+    b = zero_tidal_shape_m(r, r0)
+    bp = zero_tidal_shape_derivative(r, r0)
+    scale = C_M_S**4 / (8.0 * math.pi * G_M3_KG_S2)
+    epsilon = scale * bp / r**2
+    radial_pressure = -scale * b / r**3
+    tangential_pressure = 0.5 * scale * (b - r * bp) / r**3
+    return OrthonormalStressEnergy(epsilon, radial_pressure, tangential_pressure)
+
+
+def scan_zero_tidal_metric(
+    throat_radius_m: float, radius_multipliers: tuple[float, ...]
+) -> tuple[ZeroTidalScanPoint, ...]:
+    """Evaluate the frozen metric at declared multiples of the throat radius."""
+    r0 = _finite("throat_radius_m", throat_radius_m)
+    if r0 <= 0.0:
+        raise ValueError("throat_radius_m must be positive")
+    if not radius_multipliers:
+        raise ValueError("radius_multipliers must not be empty")
+    points = []
+    for multiplier in radius_multipliers:
+        value = _finite("radius_multiplier", multiplier)
+        if value < 1.0:
+            raise ValueError("every radius multiplier must be at least 1")
+        radius = value * r0
+        shape = zero_tidal_shape_m(radius, r0)
+        points.append(
+            ZeroTidalScanPoint(
+                throat_radius_m=r0,
+                radius_m=radius,
+                shape_m=shape,
+                shape_derivative=zero_tidal_shape_derivative(radius, r0),
+                horizon_free_at_point=True,
+                stress_energy=zero_tidal_stress_energy(radius, r0),
+            )
+        )
+    return tuple(points)
+
