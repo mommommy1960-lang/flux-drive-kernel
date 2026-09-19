@@ -64,6 +64,18 @@ class ShellCartesianTests(unittest.TestCase):
             / max(abs(pt_s[index]), abs(pr_s[index])),
             0.05,
         )
+        curvature_scale = 1.0 / 25.0**2
+        residuals = []
+        for step in (0.2, 0.1, 0.05):
+            exterior = einstein_tensor(
+                metric,
+                (0.0, 25.0, 0.0, 0.0),
+                (step, step, step, step),
+            )
+            residuals.append(max_abs(exterior) / curvature_scale)
+        self.assertGreater(residuals[0] / residuals[1], 3.5)
+        self.assertGreater(residuals[1] / residuals[2], 3.5)
+        self.assertLess(residuals[2], 2.0e-5)
 
 
 if __name__ == "__main__":
