@@ -151,6 +151,8 @@ See [`docs/NOVELTY_AND_PRIOR_ART_BOUNDARY.md`](docs/NOVELTY_AND_PRIOR_ART_BOUNDA
 for what is established prior art, what may be an integration contribution, and
 what must not be called novel without a dedicated prior-art search.
 
+For the original point-to-point transport aspiration, its black-hole/wormhole/warp distinctions, governing relativistic equations, and explicit promotion gates, see [`docs/POINT_TO_POINT_TRANSPORT_MATHEMATICAL_ROADMAP_V0_1.md`](docs/POINT_TO_POINT_TRANSPORT_MATHEMATICAL_ROADMAP_V0_1.md). Current organizational and outreach evidence is recorded in [`docs/PROJECT_STATUS_AND_ORGANIZATIONAL_READINESS_2026-09-19.md`](docs/PROJECT_STATUS_AND_ORGANIZATIONAL_READINESS_2026-09-19.md).
+
 The concrete first-build materials and assembly sequence are in
 [`docs/LOW_ENERGY_BENCH_MATERIALS_LIST.md`](docs/LOW_ENERGY_BENCH_MATERIALS_LIST.md).
 
