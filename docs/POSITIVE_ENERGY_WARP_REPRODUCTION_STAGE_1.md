@@ -79,3 +79,9 @@ The branch was then verified to contain the module, test, and this report.
 A new sequential reconciliation commit was created to trigger hosted validation
 against the complete file set. The failed run remains preserved and must not be
 described as green.
+
+Hosted reconciliation result: GitHub Actions run 35459407455 completed
+successfully against commit `132eb89d48ebc85a33874f3073a0168964b24e3d`.
+All workflow steps, including the unit-test step, passed. This successful run
+closes the integration-order fault; it does not change the scientific
+non-claims above.
