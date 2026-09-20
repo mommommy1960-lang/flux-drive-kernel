@@ -101,6 +101,17 @@ Run the tests:
 python -m unittest discover -s tests -v
 ```
 
+## September 2026 document correction
+
+The September 19 document collection included unsupported readiness claims,
+mixed wormhole/warp equations, and a misattributed arXiv citation. Those drafts
+are preserved as historical research material but are not the canonical
+scientific position. Start with the
+[`corrected scientific baseline`](docs/FLUX_DRIVE_CORRECTED_SCIENTIFIC_BASELINE_2026-09-20.md)
+and the
+[`document disposition manifest`](docs/SEPTEMBER_19_DOCUMENT_DISPOSITION_2026-09-20.md)
+before quoting or reusing any September 19 dossier language.
+
 See [`docs/ENGINEERING_AUDIT_V0_3.md`](docs/ENGINEERING_AUDIT_V0_3.md) for the
 current audit record, repeated local validation, and hosted-CI status. A hosted
 CI badge or run result must not be described as green unless GitHub actually
