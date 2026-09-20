@@ -25,7 +25,8 @@ def main() -> None:
     result = simulate_mission(inputs)
     fastest = find_fastest_passing_profile(inputs)
     print(json.dumps({
-        "model": "coupled-trajectory-environment-v0.1",
+        "product": "MAGNUSPHERE",
+        "model": "magnusphere-coupled-trajectory-environment-v0.1",
         "evidence_level": "screening simulation only",
         "passed": result.passed,
         "first_failure": result.first_failure,
