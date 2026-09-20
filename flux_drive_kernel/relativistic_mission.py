@@ -1,4 +1,4 @@
-"""Coupled relativistic mission feasibility model.
+"""MAGNUSPHERE coupled relativistic environment-protection feasibility model.
 
 This module is a transparent screening calculation, not a spacecraft design.
 It couples a symmetric constant-proper-acceleration trajectory to swept
