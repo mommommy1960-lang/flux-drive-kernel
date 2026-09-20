@@ -8,7 +8,7 @@ This log contains only non-confidential, verified routing evidence. A reply, ack
 | 2026-09-19 | University of Michigan PEPL routing address | Technical routing and critique | Sent | Await reply; do not resend |
 | 2026-09-19 | Paihau–Robinson Research Institute routing contact | Precision thrust measurement and falsification guidance | Sent | Await reply; do not resend |
 | 2026-09-19 | NASA/JPL electric-propulsion contact | Critical review of independent small-force hypothesis | Sent | Await reply; do not resend |
-| 2026-09-19 | University of Canterbury general route | Propulsion and experimental-metrology routing | Sent; acknowledgment received | Preserve acknowledgment; await substantive routing |
+| 2026-09-19 | University of Canterbury general route | Propulsion and experimental-metrology routing | Acknowledged 2026-09-20; internally routed to the University engineering team; reference #615328032 | Await engineering-team response; no stated deadline; do not resend |
 | 2026-09-19 | Wellington UniVentures | Collaboration and technical-review inquiry | Delivery failed: recipient domain not found | Preserve bounce; do not treat as refusal; verify an official route before any future attempt |
 | 2026-09-19 | AIAA | Routing request for falsification-first measurement review | Sent | Await reply; do not duplicate |
 | 2026-09-20 | Interstellar Research Group support | Routing request for hard-SF venue, independent review, CAL-00 measurement guidance, or future funding/collaboration route | Sent; Gmail message ID 1a0bc4da33813e20 | Await reply; do not resend |
