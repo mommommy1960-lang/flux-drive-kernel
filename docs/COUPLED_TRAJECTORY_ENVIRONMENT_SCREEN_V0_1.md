@@ -1,11 +1,13 @@
-# Coupled Trajectory–Dust–Radiation–Thermal Screen v0.1
+# MAGNUSPHERE Coupled Trajectory–Dust–Radiation–Thermal Screen v0.1
 
 **Status:** public computational research artifact; not a flight design or
 physical validation.
 
 ## Purpose
 
-This model connects the corrected 4.3-light-year trajectory to the engineering
+MAGNUSPHERE is the working product title for the proposed **Relativistic
+Forward Environment Protection System**. This model connects the corrected
+4.3-light-year trajectory to the engineering
 constraints that a standalone magnetosphere cannot solve: propulsion energy,
 neutral gas and dust, pre-ionization power, magnetic bending distance,
 residual-impact shielding, secondary radiation, and heat rejection.
