@@ -1,68 +1,64 @@
-# Scientific audit of Zenodo Flux Drive records (2026-09-19)
-
-Status: **correction required; not independent validation; not a demonstrated drive**
+# Scientific Audit of September 19 Zenodo Flux Records
 
 Audited records:
 
 - Zenodo 22850488, DOI 10.5281/zenodo.22850488
 - Zenodo 22850703, DOI 10.5281/zenodo.22850703
 
-This audit preserves useful work while separating verified calculations from unsupported or incorrect claims. The original records remain part of the evidence trail. Corrected Zenodo versions should cite this audit and label the originals as superseded.
+Status: correction required; not independent validation; not a demonstrated
+drive.
 
-## Result summary
+## Findings
 
 | Item | Audit result |
 |---|---|
-| Lorentz factor and cruise speed | Correct to displayed precision: for (gamma=365), (eta=sqrt{1-gamma^{-2}}=0.9999962469). |
-| “4.3 light-years in 4.3 crew-days” | Correct only for an idealized constant-speed cruise segment, approximately. Earth-frame travel remains about 4.3 years. Acceleration, deceleration, energy, shielding, and trajectory constraints are omitted. |
-| “Flat Minkowski Velocity Slicing” | This is ordinary special-relativistic motion, not a new propulsion mechanism and not point-to-point instantaneous travel. |
-| Warp-shell energy equation | The displayed throat relation is Morris–Thorne-style wormhole algebra and is not a derivation for the Alcubierre/Fuchs shift metric. The quoted (-4.82	imes10^{40},mathrm{J/m^3}) is therefore not established by the displayed equation. |
-| Universal Type-IV boundary claim | Not established. Current repository work found an implementation/convention disagreement; the Hawking–Ellis classification has not completed an independently reproduced, converged, frame-independent proof. |
-| Atmospheric “coordinate singularities” | Incorrect. Ordinary relativistic interaction with atmosphere/plasma creates extreme particle, radiation, heating, and momentum-transfer loads; it does not by itself create a metric coordinate singularity or Type-IV stress-energy. |
-| 5 T plasma cushion | A concept to analyze, not a resolution. At (gamma=365), an incident proton has about (342,mathrm{GeV}) kinetic energy and a 5 T perpendicular-field gyroradius of roughly (228,mathrm{m}). Neutral dust and radiation remain unresolved. |
-| (2.048	imes10^{13},mathrm{J}) SMES | Unsupported as a vehicle subsystem. This is 5.69 GWh. Even the ideal magnetic-field volume is about (2.06	imes10^6,mathrm{m^3}) at 5 T or (1.29	imes10^5,mathrm{m^3}) at 20 T, before structure, shielding, cryogenics, switching, and stress margins. |
-| Antihydrogen pellets | Not physically supported. Neutral antihydrogen cannot be electrostatically confined as described, and macroscopic solid antihydrogen pellets are not an available technology. |
-| Fuel-flow arithmetic | The conversion (2.41	imes10^{12},mathrm{W}/c^2=2.68	imes10^{-5},mathrm{kg/s}) total annihilated mass and 13.4 mg/s antimatter is arithmetically correct only for ideal 100% conversion. It is not a propulsion closure. |
-| Energy closure | At (gamma=365), kinetic energy is (3.27	imes10^{19},mathrm{J/kg}). Running 2.41 TW for 4.3 years supplies (3.27	imes10^{20},mathrm{J}), enough for only about 10 kg of kinetic payload at 100% efficiency, before deceleration and all losses. |
-| Radiator/nozzle temperatures | Not supported by the stated geometry. Rejecting (8.44	imes10^{11},mathrm{W}) at 3300 K requires about (1.39	imes10^5,mathrm{m^2}) at emissivity 0.9; the stated 5 m-scale surface is orders of magnitude too small. |
-| GaPO4 metrology | Potentially useful instrumentation research, but “zero artifact” and “physically proves” are too strong. Calibration, cross-axis coupling, thermal gradients, wiring forces, EM coupling, drift, and independent replication remain required. |
-| VHDL/register map | A design sketch, not hardware validation. The sample decoder omits multiple table registers and does not establish timing closure, fixed-point scaling, fail-safe behavior, CDC handling, or verified synthesis. |
-| “Peer-reviewed” / institutional feedback | Unsupported. No verified peer review or technical findings from Stanford, University of Washington, or Paihau–Robinson are recorded. Outreach requests or routing messages must not be rewritten as institutional technical conclusions. |
-| “Publication-grade” / “resolved” | Incorrect status language. Zenodo deposit creates a citable public record; it does not confer peer review, correctness, priority over prior physics, or validation. |
+| Lorentz benchmark | For gamma 365, beta is 0.9999962469. This is correct special relativity. |
+| Travel time | About 4.3 onboard days for an idealized 4.3-year constant-speed segment; acceleration and deceleration are excluded. |
+| Propulsion claim | Ordinary time dilation does not supply thrust, energy, shielding, steering, or an endpoint shortcut. |
+| Negative-energy value | The `-4.82e40 J/m^3` result belongs to the frozen Morris-Thorne throat regression, not the displayed Alcubierre/Fuchs model. |
+| Universal Type-IV claim | Not established. The direct-`g01` and ADM implementations disagree in the boundary region. |
+| Atmospheric singularity | Incorrect. Relativistic atmosphere/plasma interaction creates particle, radiation, heat, and momentum loads, not a coordinate singularity by itself. |
+| 5 T shield | At gamma 365, an incident proton carries about 342 GeV and has an approximately 228 m perpendicular gyroradius in 5 T. Dust and secondary radiation remain unresolved. |
+| SMES | `2.048e13 J` is 5.69 GWh. Ideal field volume is about `2.06e6 m^3` at 5 T or `1.29e5 m^3` at 20 T, before engineering margins. |
+| Antihydrogen | Macroscopic solid antihydrogen pellets are unavailable; neutral antihydrogen cannot be electrostatically confined as described. |
+| Energy | At gamma 365, kinetic energy is about `3.27e19 J/kg`. A 2.41 TW source operating for 4.3 years supplies only about 10 kg of ideal kinetic payload before deceleration and losses. |
+| Waste heat | Rejecting `8.44e11 W` at 3300 K and emissivity 0.9 requires about `1.39e5 m^2` of ideal radiating area. |
+| GaPO4 | A legitimate high-temperature piezoelectric candidate, but not an artifact-free balance by itself. |
+| VHDL | A register-map sketch, not verified hardware, timing closure, or fail-safe certification. |
+| Institutional feedback | Outreach is not peer review. No verified Stanford, University of Washington, or Paihau-Robinson technical findings are recorded. |
+| Zenodo status | A DOI makes the work citable; it does not establish correctness, novelty, peer review, or validation. |
 
-## Corrections required in the next Zenodo versions
+## Bibliography correction
 
-1. Rename the work as a **concept and falsification plan**, not a peer-reviewed proof or physically closed propulsion system.
-2. Replace “near-instantaneous” and “point-to-point shortcut” with “short onboard proper time during idealized relativistic cruise.”
-3. State Earth-frame duration, acceleration profile, deceleration, rocket equation, energy budget, radiation, dust, and waste-heat limits.
-4. Remove the mixed wormhole/warp equation and the unsupported numerical negative-energy threshold unless derived reproducibly for one frozen metric with conventions and units shown.
-5. Replace the universal Type-IV assertion with the current repository status: implementation discrepancy under investigation; classifier/convergence review pending.
-6. Remove claims that atmosphere generates coordinate singularities or Type-IV tensors.
-7. Label the 5 T field, SMES value, antimatter system, and thermal architecture as unvalidated parameter assumptions, not resolved subsystems.
-8. Remove or document every claimed institutional comment with a public, consented source. Outreach alone is not review.
-9. Replace “absolute zero pyroelectric artifacts” with the narrower material property and a complete instrument uncertainty budget.
-10. Correct the bibliography. The cited “Fuchs et al. (2024), Journal of Mathematical Physics 65(4), 210–225” entry could not be matched to a verified publication and must not remain without a DOI or exact primary source.
-11. Do not call a Zenodo upload peer reviewed. Use “public preprint/concept dossier” only after the equations and citations are corrected.
-12. Link the corrected records to the GitHub commit, tests, software version, and explicit non-claims.
+The applicable source is Jared Fuchs et al., "Constant Velocity Physical Warp
+Drive Solution," *Classical and Quantum Gravity* 41 (2024) 095013,
+DOI `10.1088/1361-6382/ad26aa`, arXiv:2405.02709. The dossier's *Journal of
+Mathematical Physics* citation is incorrect.
 
-## Preserved positive result
+`arXiv:2605.25417` is An T. Le, "Relativistic elastic shells: material support
+and cavity geometry." It is not a boundary-cost paper and does not support the
+claimed Fuchs Type-IV-tail conclusion.
 
-The useful mathematical core is the special-relativity benchmark:
+`arXiv:2606.22531` is An T. Le, "Radiative steering of warp shells." It treats
+subluminal photon-recoil steering and does not establish reactionless or
+instantaneous travel.
 
-[
-gamma = rac{1}{sqrt{1-eta^2}},qquad
-eta = 0.9999962469,
-]
+## Required record correction
 
-which makes a 4.3-year idealized cruise interval correspond to roughly 4.3 days of onboard proper time. This is established textbook physics, not a new drive. The unsolved work is how to accelerate, protect, power, and decelerate a macroscopic vehicle without violating known engineering and physical constraints.
+1. Publish corrected Zenodo versions that cite the original records and this
+   audit.
+2. Describe the work as a concept and falsification program, not a peer-reviewed
+   proof or physically closed propulsion system.
+3. Remove the mixed wormhole/warp equation and unsupported universal Type-IV
+   claim.
+4. Label the 5 T field, SMES, antimatter, thermal, and flight architecture as
+   unvalidated parameter studies.
+5. Replace institutional "feedback" with a verified correspondence-status log.
+6. Link the corrected records to the exact GitHub commit and test result.
 
-## Project status after audit
+## Preserved result and current boundary
 
-- Public record: established.
-- Correct special-relativity timing example: established.
-- Warp-boundary theorem: not established.
-- Positive-energy propulsion source: not established.
-- Atmospheric/magnetospheric resolution: not established.
-- Macroscopic antimatter architecture: not established.
-- CAL-00 residual-force result: not yet physically demonstrated.
-- Fame or scientific priority: not established.
+The useful result is the special-relativity proper-time benchmark and the
+falsification-oriented measurement/software framework. No physical Flux Drive,
+reactionless propulsion, faster-than-light travel, or instantaneous
+point-to-point transport has been demonstrated.
